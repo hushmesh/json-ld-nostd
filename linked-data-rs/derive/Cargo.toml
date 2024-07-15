@@ -1,0 +1,20 @@
+[package]
+name = "linked-data-derive"
+description = "Derive macros for the `linked-data` crate"
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+edition.workspace = true
+version.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "2.0.29"
+proc-macro2 = "1.0.66"
+quote = "1.0.33"
+proc-macro-error = "1.0.4"
+thiserror-nostd-notrait.workspace = true
+iref.workspace = true
+static-iref.workspace = true

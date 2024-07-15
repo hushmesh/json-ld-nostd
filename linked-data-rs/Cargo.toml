@@ -1,0 +1,54 @@
+[package]
+name = "linked-data"
+description = "Linked-Data dateset serialization/deserialization traits"
+categories = ["encoding", "web-programming"]
+keywords = ["semantic-web", "linked-data", "rdf", "serialization"]
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+edition.workspace = true
+version.workspace = true
+
+[workspace.package]
+authors = ["Spruce Systems, Inc."]
+license = "MIT/Apache-2.0"
+repository = "https://github.com/spruceid/linked-data-rs"
+edition = "2021"
+version = "0.1.2"
+
+[features]
+default = ["std", "derive", "serde"]
+std = [ "thiserror-nostd-notrait/std", "rdf-types/std", "xsd-types/std", "static-iref/std", "iref/std", "json-syntax/std" ]
+derive = ["linked-data-derive"]
+
+[dependencies]
+rdf-types = { path = "../rdf-types", default-features = false }
+xsd-types = { path = "../xsd-types", default-features = false }
+static-iref = { path = "../static-iref", default-features = false }
+json-syntax = { path = "../json-syntax", default-features = false, features = ["canonicalize"] }
+educe = "0.4.22"
+im = "15.1.0"
+iref.workspace = true
+thiserror-nostd-notrait.workspace = true
+linked-data-derive = { workspace = true, optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[dev-dependencies]
+json-syntax = { path = "../json-syntax", features = ["serde"] }
+
+[[example]]
+name = "derive"
+required-features = ["derive"]
+
+[workspace]
+members = [
+	"derive"
+]
+
+resolver = "2"
+
+[workspace.dependencies]
+linked-data-derive = { version = "0.1.0", path = "derive" }
+iref = { path = "../iref", default-features = false }
+static-iref = { path = "../static-iref", default-features = false }
+thiserror-nostd-notrait = { version = "1.0", default-features = false }
