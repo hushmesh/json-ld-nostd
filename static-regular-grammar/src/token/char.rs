@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use core::fmt::Display;
 
 use btree_range_map::{AnyRange, RangeMap};
 use quote::quote;
@@ -33,7 +33,7 @@ impl Token for char {
 		char::from_u32(v)
 	}
 
-	fn fmt_token(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+	fn fmt_token(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
 		Sanitized(*self).fmt(f)
 	}
 

@@ -36,24 +36,24 @@ pub trait PrintWithSizeAndContext<C> {
 	fn contextual_fmt_with_size(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result;
+	) -> core::fmt::Result;
 }
 
 impl<'a, T: PrintWithSizeAndContext<C> + ?Sized, C> PrintWithSizeAndContext<C> for &'a T {
 	fn contextual_fmt_with_size(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		T::contextual_fmt_with_size(*self, context, f, options, indent, sizes, index)
 	}
 }
@@ -61,12 +61,12 @@ impl<'a, T: PrintWithSizeAndContext<C> + ?Sized, C> PrintWithSizeAndContext<C> f
 impl<'c, T: PrintWithSizeAndContext<C>, C> super::PrintWithSize for Contextual<T, &'c C> {
 	fn fmt_with_size(
 		&self,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		self.0
 			.contextual_fmt_with_size(self.1, f, options, indent, sizes, index)
 	}
@@ -113,12 +113,12 @@ impl<T: PrintWithSizeAndContext<C>, M, C> PrintWithSizeAndContext<C> for locspan
 	fn contextual_fmt_with_size(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		self.0
 			.contextual_fmt_with_size(context, f, options, indent, sizes, index)
 	}
@@ -128,10 +128,10 @@ impl<T: PrintWithContext<C>, M, C> PrintWithContext<C> for locspan::Meta<T, M> {
 	fn contextual_fmt_with(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		self.0.contextual_fmt_with(context, f, options, indent)
 	}
 }
@@ -151,12 +151,12 @@ impl<T: PrintWithSizeAndContext<C>, C> PrintWithSizeAndContext<C> for locspan::S
 	fn contextual_fmt_with_size(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		self.0
 			.contextual_fmt_with_size(context, f, options, indent, sizes, index)
 	}
@@ -166,10 +166,10 @@ impl<T: PrintWithContext<C>, C> PrintWithContext<C> for locspan::Stripped<T> {
 	fn contextual_fmt_with(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		self.0.contextual_fmt_with(context, f, options, indent)
 	}
 }
@@ -189,12 +189,12 @@ impl<T: PrintWithSizeAndContext<C>, C> PrintWithSizeAndContext<C> for [T] {
 	fn contextual_fmt_with_size(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		super::print_array(
 			self.iter().map(|i| i.with(context)),
 			f,
@@ -221,12 +221,12 @@ impl<T: PrintWithSizeAndContext<C>, C> PrintWithSizeAndContext<C> for HashSet<T>
 	fn contextual_fmt_with_size(
 		&self,
 		context: &C,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		super::print_array(
 			self.iter().map(|i| i.with(context)),
 			f,

@@ -17,9 +17,8 @@ proc-macro = true
 [features]
 default = [ "std" ]
 std = [ "iref/std" ]
-no_std = [ "iref/no_std" ]
 
 [dependencies]
-iref = { path = "../iref", optional = true, default-features = false }
+iref = { path = "../iref", default-features = false }
 syn = "2.0.29"
 quote = "1.0.33"

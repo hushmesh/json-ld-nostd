@@ -3,11 +3,11 @@
 puts <<~EOS
 	use std::path::Path;
 	use std::fs;
-	use std::fmt::Debug;
+	use core::fmt::Debug;
 	use json_syntax::{Value, Parse, parse::Options};
 	use decoded_char::DecodedChars;
 
-	fn infallible<T>(t: T) -> Result<T, std::convert::Infallible> {
+	fn infallible<T>(t: T) -> Result<T, core::convert::Infallible> {
 		Ok(t)
 	}
 

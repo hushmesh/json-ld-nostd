@@ -71,4 +71,4 @@ jobs:
           profile: minimal
           override: true
       - name: Build
-        run: cargo build --verbose --no-default-features --features="no_std"
+        run: cargo build --verbose --no-default-features

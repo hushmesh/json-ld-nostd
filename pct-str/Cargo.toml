@@ -14,10 +14,9 @@ readme = "README.md"
 [features]
 default = [ "std" ]
 std = [ "thiserror", "utf8-decode/std" ]
-no_std = [ "utf8-decode/no_std", "no_std_io" ]
 
 [dependencies]
 cfg-if = "1.0"
-utf8-decode = { path = "../utf8-decode", optional = true, default-features = false }
+utf8-decode = { path = "../utf8-decode", default-features = false }
 thiserror = { version = "1.0.40", optional = true }
-no_std_io = { version = "0.6.0", optional = true }
+no_std_io = { version = "0.6.0" }

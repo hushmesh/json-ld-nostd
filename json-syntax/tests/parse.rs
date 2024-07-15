@@ -1,5 +1,5 @@
 use json_syntax::{parse::Options, Parse, Value};
-use std::fmt::Debug;
+use core::fmt::Debug;
 use std::fs;
 use std::path::Path;
 

@@ -686,7 +686,7 @@ fn generate_typed<T: Token>(
 		let buffer_ident = buffer.ident;
 		let owned_string_type = T::rust_owned_string_type();
 		#[cfg(feature="std")]
-		let owned_trait = quote! { ::std::borrow::ToOwned };
+		let owned_trait = quote! { ::alloc::borrow::ToOwned };
 		#[cfg(not(feature="std"))]
 		let owned_trait = quote! { ::alloc::borrow::ToOwned };
 		let owned_doc = format!("Owned {name}.");

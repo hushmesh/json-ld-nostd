@@ -117,7 +117,7 @@ fn strong_connect<G: ?Sized + SccGraph>(
 			None => {
 				// Successor w has not yet been visited; recurse on it
 				let w_lowlink = strong_connect(graph, w, stack, map, components);
-				Some(std::cmp::min(map[&v].lowlink, w_lowlink))
+				Some(core::cmp::min(map[&v].lowlink, w_lowlink))
 			}
 			Some(w_data) => {
 				if w_data.on_stack {
@@ -125,7 +125,7 @@ fn strong_connect<G: ?Sized + SccGraph>(
 					// If w is not on stack, then (v, w) is an edge pointing to an SCC already found and must be ignored
 					// Note: The next line may look odd - but is correct.
 					// It says w.index not w.lowlink; that is deliberate and from the original paper
-					Some(std::cmp::min(map[&v].lowlink, w_data.index))
+					Some(core::cmp::min(map[&v].lowlink, w_data.index))
 				} else {
 					None
 				}

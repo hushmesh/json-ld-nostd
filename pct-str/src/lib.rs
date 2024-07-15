@@ -562,7 +562,7 @@ impl<F: Fn(char) -> bool> Encoder for F {
 /// Owned, mutable percent-encoded string.
 ///
 /// This is the equivalent of [`String`] for percent-encoded strings.
-/// It implements [`Deref`](`std::ops::Deref`) to [`PctStr`] meaning that all methods on [`PctStr`] slices are
+/// It implements [`Deref`](`core::ops::Deref`) to [`PctStr`] meaning that all methods on [`PctStr`] slices are
 /// available on `PctString` values as well.
 pub struct PctString(Vec<u8>);
 
