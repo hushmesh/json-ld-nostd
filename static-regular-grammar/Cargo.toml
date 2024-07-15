@@ -1,0 +1,36 @@
+[package]
+name = "static-regular-grammar"
+version = "2.0.1"
+edition = "2021"
+authors = ["Timothée Haudebourg <author@haudebourg.net>"]
+categories = ["parsing"]
+keywords = ["parsing", "abnf", "derive", "grammar", "regular"]
+description = "Derive macro for static regular grammar"
+repository = "https://github.com/timothee-haudebourg/static-regular-grammar"
+documentation = "https://docs.rs/static-regular-grammar"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+
+[lib]
+proc-macro = true
+
+[features]
+default = ["std"]
+std = []
+no_std = []
+
+[dependencies]
+btree-range-map = { version = "0.7.0", features = ["serde"] }
+proc-macro2 = "1.0.60"
+proc-macro-error = "1.0.4"
+syn = "2.0.18"
+quote = "1.0.29"
+thiserror = "1.0.40"
+abnf = "0.13.0"
+indoc = "2.0.1"
+serde = { version = "1.0.164", features = ["derive"] }
+ciborium = "=0.2.1"
+ciborium-io = "=0.2.1"
+ciborium-ll = "=0.2.1"
+sha2 = "0.10.7"
+hex_fmt = "0.3.0"
