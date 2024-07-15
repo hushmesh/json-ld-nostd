@@ -56,7 +56,7 @@ extern crate std;
 
 extern crate alloc;
 
-extern crate thiserror_nostd_notrait as thiserror; 
+extern crate thiserror_nostd_notrait as thiserror;
 
 use iref::Iri;
 use static_iref::iri;
