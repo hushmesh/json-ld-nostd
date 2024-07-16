@@ -1,0 +1,35 @@
+[package]
+name = "json-ld-expansion"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+categories.workspace = true
+keywords.workspace = true
+repository.workspace = true
+license.workspace = true
+description = "JSON-LD document expansion implementation"
+documentation = "https://docs.rs/json-ld-expansion"
+readme = "README.md"
+
+[features]
+default = ["std"]
+std = ["json-ld-core/std", "json-ld-syntax/std", "json-ld-context-processing/std", "json-syntax/std", "iref/std", "rdf-types/std"]
+
+[dependencies]
+json-ld-core.workspace = true
+json-ld-syntax.workspace = true
+json-ld-context-processing.workspace = true
+json-syntax.workspace = true
+langtag.workspace = true
+iref.workspace = true
+rdf-types.workspace = true
+futures.workspace = true
+mown.workspace = true
+educe.workspace = true
+contextual.workspace = true
+thiserror.workspace = true
+indexmap.workspace = true
+
+[dev-dependencies]
+async-std = { workspace = true, features = ["attributes"] }
+static-iref.workspace = true

@@ -1,0 +1,95 @@
+[package]
+name = "json-ld"
+edition.workspace = true
+authors.workspace = true
+categories.workspace = true
+keywords.workspace = true
+repository.workspace = true
+license.workspace = true
+version.workspace = true
+documentation.workspace = true
+description = "JSON-LD implementation"
+readme = "README.md"
+
+[features]
+default = ["std"]
+std = [
+	"json-syntax/std",
+	"json-ld-core/std",
+	"json-ld-context-processing/std",
+	"json-ld-expansion/std",
+	"iref/std",
+	"static-iref/std",
+	"rdf-types/std",
+	]
+reqwest = ["json-ld-core/reqwest"]
+serde = ["json-ld-syntax/serde", "json-ld-core/serde"]
+
+[dependencies]
+json-ld-syntax.workspace = true
+json-ld-core.workspace = true
+json-ld-context-processing.workspace = true
+json-ld-expansion.workspace = true
+json-syntax.workspace = true
+futures.workspace = true
+locspan.workspace = true
+iref.workspace = true
+rdf-types.workspace = true
+contextual.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+log.workspace = true
+async-std = { workspace = true, features = ["attributes"] }
+iref.workspace = true
+static-iref.workspace = true
+nquads-syntax = "0.19"
+stacker = "0.1.15"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[workspace]
+members = [
+	"crates/*"
+]
+
+resolver = "2"
+
+[workspace.package]
+authors = ["Timothée Haudebourg <timothee@haudebourg.net>"]
+categories = ["web-programming", "database", "data-structures"]
+keywords = ["json-ld", "json", "semantic-web", "linked-data", "rdf"]
+repository = "https://github.com/timothee-haudebourg/json-ld"
+documentation = "https://docs.rs/json-ld"
+license = "MIT/Apache-2.0"
+edition = "2021"
+version = "0.21.1"
+
+[workspace.dependencies]
+json-ld = { path = ".", version = "0.21.1" }
+json-ld-syntax = { path = "crates/syntax", default-features = false, version = "0.21.1" }
+json-ld-core = { path = "crates/core", default-features = false, version = "0.21.1" }
+json-ld-context-processing = { path = "crates/context-processing", default-features = false, version = "0.21.1" }
+json-ld-expansion = { path = "crates/expansion", default-features = false, version = "0.21.1" }
+json-syntax = { path = "../json-syntax", default-features = false }
+iref = { path = "../iref", default-features = false }
+static-iref = { path = "../static-iref", default-features = false }
+langtag = "0.4"
+rdf-types = { path = "../rdf-types", default-features = false }
+contextual = "0.1.4"
+locspan = "0.8"
+educe = "0.4.23"
+futures = "0.3"
+mown = "0.2.2"
+hashbrown = "0.12.1"
+smallvec = "1.10"
+log = "0.4.17"
+thiserror = "1.0.38"
+serde = "1.0"
+indexmap = "2.0"
+
+iref-enum = "3.0"
+async-std = "1.12"
+
+linked-data = { path = "../linked-data-rs", default-features = false }
