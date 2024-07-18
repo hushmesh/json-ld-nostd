@@ -51,7 +51,7 @@ impl<T> Nullable<T> {
 
 	pub fn as_deref(&self) -> Nullable<&T::Target>
 	where
-		T: std::ops::Deref,
+		T: core::ops::Deref,
 	{
 		match self {
 			Self::Null => Nullable::Null,

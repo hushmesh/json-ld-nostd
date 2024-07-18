@@ -4,6 +4,10 @@ use super::{
 	Context, ContextEntry, Definition, TermDefinition,
 };
 use crate::{Container, ErrorCode, Keyword, Nullable, TryFromJson};
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use iref::IriRefBuf;
 
 #[derive(Debug, Clone, thiserror::Error)]

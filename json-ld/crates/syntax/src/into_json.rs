@@ -2,6 +2,9 @@ use crate::{
 	context, Container, ContainerKind, ContextEntry, Direction, Keyword, LenientLangTagBuf,
 	Nullable,
 };
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::vec::Vec;
 use contextual::Contextual;
 use indexmap::IndexSet;
 

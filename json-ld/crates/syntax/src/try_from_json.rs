@@ -1,6 +1,7 @@
 use crate::{
 	context::InvalidContext, Container, ContainerKind, Direction, LenientLangTagBuf, Nullable,
 };
+use alloc::vec::Vec;
 use iref::IriRefBuf;
 
 pub trait TryFromJson: Sized {

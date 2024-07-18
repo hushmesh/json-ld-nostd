@@ -1,6 +1,8 @@
 //! This library provide functions to parse JSON-LD contexts
 //! and print JSON-LD documents.
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
 extern crate alloc;
 
 extern crate thiserror_nostd_notrait as thiserror;

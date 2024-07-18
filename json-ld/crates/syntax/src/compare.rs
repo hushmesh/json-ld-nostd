@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use json_syntax::Value;
 
 /// JSON-LD comparison.

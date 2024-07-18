@@ -1,6 +1,8 @@
 use crate::{CompactIri, ExpandableRef, Keyword};
-use iref::Iri;
+use alloc::string::String;
+use alloc::string::ToString;
 use core::hash::Hash;
+use iref::Iri;
 
 #[derive(Clone, PartialOrd, Ord, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

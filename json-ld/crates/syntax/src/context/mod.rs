@@ -1,3 +1,5 @@
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
 use alloc::vec::Vec;
 use iref::{Iri, IriRef, IriRefBuf};
 use smallvec::SmallVec;
@@ -67,7 +69,7 @@ impl Context {
 
 	pub fn as_slice(&self) -> &[ContextEntry] {
 		match self {
-			Self::One(c) => std::slice::from_ref(c),
+			Self::One(c) => core::slice::from_ref(c),
 			Self::Many(list) => list,
 		}
 	}

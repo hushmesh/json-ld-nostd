@@ -1,4 +1,7 @@
-use std::{hash::Hash, str::FromStr};
+use alloc::borrow::ToOwned;
+use alloc::string::String;
+use alloc::string::ToString;
+use core::{hash::Hash, str::FromStr};
 
 #[derive(Debug, thiserror::Error)]
 #[error("unknown JSON-LD version `{0}`")]

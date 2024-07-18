@@ -2,6 +2,9 @@ use crate::{
 	container, context, CompactIri, CompactIriBuf, Container, ContainerKind, Direction, Keyword,
 	LenientLangTag, LenientLangTagBuf, Nullable,
 };
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::string::ToString;
 use educe::Educe;
 use iref::{Iri, IriBuf};
 use rdf_types::{BlankId, BlankIdBuf};

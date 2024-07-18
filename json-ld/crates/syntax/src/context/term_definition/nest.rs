@@ -1,3 +1,5 @@
+use alloc::string::String;
+use alloc::string::ToString;
 use core::hash::Hash;
 
 use crate::is_keyword;

@@ -13,7 +13,7 @@ readme = "README.md"
 
 [features]
 default = ["std"]
-std = ["json-syntax/std", "iref/std", "rdf-types/std", "json-syntax/std"]
+std = ["json-syntax/std", "iref/std", "rdf-types/std"]
 serde = ["dep:serde", "iref/serde", "locspan/serde", "json-syntax/serde", "indexmap/serde"]
 
 [dependencies]

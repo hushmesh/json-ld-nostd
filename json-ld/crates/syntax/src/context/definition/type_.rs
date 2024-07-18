@@ -1,4 +1,6 @@
-use std::{hash::Hash, str::FromStr};
+use alloc::borrow::ToOwned;
+use alloc::string::String;
+use core::{hash::Hash, str::FromStr};
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

@@ -1,9 +1,11 @@
 use crate::{CompactIri, Keyword};
+use alloc::borrow::Borrow;
+use alloc::borrow::ToOwned;
+use alloc::string::String;
 use core::fmt;
 use core::hash::Hash;
 use iref::Iri;
 use rdf_types::BlankId;
-use std::borrow::Borrow;
 
 /// Context key.
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]

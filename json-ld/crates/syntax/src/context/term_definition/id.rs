@@ -1,9 +1,11 @@
 use crate::context::definition::KeyOrKeywordRef;
 use crate::{CompactIri, ExpandableRef, Keyword};
-use iref::Iri;
-use rdf_types::BlankId;
+use alloc::string::String;
+use alloc::string::ToString;
 use core::fmt;
 use core::hash::Hash;
+use iref::Iri;
+use rdf_types::BlankId;
 
 #[derive(Clone, PartialOrd, Ord, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

@@ -1,5 +1,6 @@
 use super::{term_definition, TermDefinition};
 use crate::{Direction, Keyword, LenientLangTagBuf, Nullable};
+use alloc::boxed::Box;
 use educe::Educe;
 use indexmap::IndexMap;
 use iref::IriRefBuf;
@@ -344,15 +345,15 @@ mod tests {
 	use super::Definition;
 
 	#[test]
+	#[cfg(feature = "serde")]
 	fn deserialize_null_vocab() {
-		let definition: Definition = json_syntax::from_value(json_syntax::json!({
-			"@vocab": null
-		}))
-		.unwrap();
+		let definition: Definition =
+			json_syntax::from_value(json_syntax::json!({ "@vocab": null })).unwrap();
 		assert_eq!(definition.vocab, Some(crate::Nullable::Null))
 	}
 
 	#[test]
+	#[cfg(feature = "serde")]
 	fn deserialize_no_vocab() {
 		let definition: Definition = json_syntax::from_value(json_syntax::json!({})).unwrap();
 		assert_eq!(definition.vocab, None)

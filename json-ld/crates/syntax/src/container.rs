@@ -1,4 +1,5 @@
 use crate::Keyword;
+use alloc::vec::Vec;
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

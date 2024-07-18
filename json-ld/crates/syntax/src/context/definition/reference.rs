@@ -1,5 +1,6 @@
 use super::{BindingsIter, Definition, EntryValueSubItems, Key, Type, Version, Vocab};
 use crate::{context::TermDefinition, Direction, LenientLangTagBuf, Nullable};
+use alloc::boxed::Box;
 
 use iref::IriRef;
 

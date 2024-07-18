@@ -1,4 +1,5 @@
 use crate::{CompactIri, ExpandableRef};
+use alloc::string::String;
 use iref::Iri;
 use rdf_types::BlankId;
 

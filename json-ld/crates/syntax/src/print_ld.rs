@@ -1,9 +1,10 @@
 use crate::{Direction, LenientLangTag, LenientLangTagBuf, Nullable};
+use alloc::vec::Vec;
+use core::fmt;
 use iref::{IriRef, IriRefBuf};
 use json_syntax::print::{
 	printed_string_size, string_literal, Options, PrecomputeSize, Print, Size,
 };
-use core::fmt;
 
 impl PrecomputeSize for Direction {
 	fn pre_compute_size(&self, _options: &Options, _sizes: &mut Vec<Size>) -> Size {

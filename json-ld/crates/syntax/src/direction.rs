@@ -1,4 +1,6 @@
-use std::{fmt, str::FromStr};
+use alloc::borrow::ToOwned;
+use alloc::string::String;
+use core::{fmt, str::FromStr};
 
 #[derive(Debug, thiserror::Error)]
 #[error("invalid JSON-LD text direction `{0}`")]

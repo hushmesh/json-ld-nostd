@@ -1,3 +1,5 @@
+use alloc::borrow::ToOwned;
+use alloc::string::String;
 use iref::{IriRef, IriRefBuf};
 
 pub struct InvalidCompactIri<T>(pub T);
@@ -50,7 +52,7 @@ impl CompactIri {
 	}
 }
 
-impl std::ops::Deref for CompactIri {
+impl core::ops::Deref for CompactIri {
 	type Target = str;
 
 	fn deref(&self) -> &str {
@@ -58,7 +60,7 @@ impl std::ops::Deref for CompactIri {
 	}
 }
 
-impl std::borrow::Borrow<str> for CompactIri {
+impl alloc::borrow::Borrow<str> for CompactIri {
 	fn borrow(&self) -> &str {
 		&self.0
 	}
@@ -103,13 +105,13 @@ impl CompactIriBuf {
 	}
 }
 
-impl std::borrow::Borrow<CompactIri> for CompactIriBuf {
+impl alloc::borrow::Borrow<CompactIri> for CompactIriBuf {
 	fn borrow(&self) -> &CompactIri {
 		self.as_compact_iri()
 	}
 }
 
-impl std::ops::Deref for CompactIriBuf {
+impl core::ops::Deref for CompactIriBuf {
 	type Target = CompactIri;
 
 	fn deref(&self) -> &CompactIri {

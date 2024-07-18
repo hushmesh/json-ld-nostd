@@ -1,5 +1,8 @@
+use alloc::borrow::Borrow;
+use alloc::borrow::ToOwned;
+use alloc::string::String;
+use core::{fmt, hash::Hash, ops::Deref};
 pub use langtag::{InvalidLangTag, LangTag, LangTagBuf};
-use std::{borrow::Borrow, fmt, hash::Hash, ops::Deref};
 
 use crate::utils::{case_insensitive_cmp, case_insensitive_eq, case_insensitive_hash};
 
@@ -41,13 +44,13 @@ impl PartialEq for LenientLangTag {
 impl Eq for LenientLangTag {}
 
 impl PartialOrd for LenientLangTag {
-	fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+	fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
 		Some(self.cmp(other))
 	}
 }
 
 impl Ord for LenientLangTag {
-	fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+	fn cmp(&self, other: &Self) -> core::cmp::Ordering {
 		case_insensitive_cmp(self.as_bytes(), other.as_bytes())
 	}
 }
@@ -127,13 +130,13 @@ impl PartialEq for LenientLangTagBuf {
 impl Eq for LenientLangTagBuf {}
 
 impl PartialOrd for LenientLangTagBuf {
-	fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+	fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
 		Some(self.cmp(other))
 	}
 }
 
 impl Ord for LenientLangTagBuf {
-	fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+	fn cmp(&self, other: &Self) -> core::cmp::Ordering {
 		self.as_lenient_lang_tag_ref()
 			.cmp(other.as_lenient_lang_tag_ref())
 	}
