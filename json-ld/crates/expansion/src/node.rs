@@ -13,7 +13,7 @@ use json_ld_syntax::{ContainerKind, Keyword, LenientLangTagBuf, Nullable};
 use json_syntax::object::Entry;
 use mown::Mown;
 use rdf_types::VocabularyMut;
-use std::hash::Hash;
+use core::hash::Hash;
 
 /// Convert a term to a node id, if possible.
 /// Return `None` if the term is `null`.

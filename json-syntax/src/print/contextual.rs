@@ -1,6 +1,7 @@
+use alloc::vec::Vec;
 use contextual::{Contextual, WithContext};
-use std::collections::HashSet;
 use core::fmt;
+use hashbrown::HashSet;
 
 use super::{Options, Size};
 

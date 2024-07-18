@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use iref::{Iri, IriRef, IriRefBuf};
 use smallvec::SmallVec;
 
@@ -89,14 +90,14 @@ impl Context {
 		}
 	}
 
-	pub fn iter(&self) -> std::slice::Iter<ContextEntry> {
+	pub fn iter(&self) -> core::slice::Iter<ContextEntry> {
 		self.as_slice().iter()
 	}
 }
 
 pub enum IntoIter {
 	One(Option<ContextEntry>),
-	Many(std::vec::IntoIter<ContextEntry>),
+	Many(alloc::vec::IntoIter<ContextEntry>),
 }
 
 impl Iterator for IntoIter {
@@ -123,7 +124,7 @@ impl IntoIterator for Context {
 }
 
 impl<'a> IntoIterator for &'a Context {
-	type IntoIter = std::slice::Iter<'a, ContextEntry>;
+	type IntoIter = core::slice::Iter<'a, ContextEntry>;
 	type Item = &'a ContextEntry;
 
 	fn into_iter(self) -> Self::IntoIter {
@@ -280,7 +281,7 @@ impl<'a> Iterator for ContextSubFragments<'a> {
 }
 
 pub enum SubFragments<'a> {
-	ContextArray(std::slice::Iter<'a, ContextEntry>),
+	ContextArray(core::slice::Iter<'a, ContextEntry>),
 	Context(ContextSubFragments<'a>),
 	Definition(Box<definition::SubItems<'a>>),
 }

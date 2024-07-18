@@ -1,3 +1,7 @@
+use alloc::borrow::ToOwned;
+use alloc::collections::{BTreeMap, BTreeSet};
+use alloc::vec::Vec;
+use core::{hash::Hash, str::FromStr};
 use hashbrown::HashSet;
 use iref::Iri;
 use json_syntax::Parse;
@@ -11,11 +15,6 @@ use rdf_types::{
 	LiteralTypeRef, Quad, Term, Vocabulary,
 };
 use static_iref::iri;
-use std::{
-	collections::{BTreeMap, BTreeSet},
-	hash::Hash,
-	str::FromStr,
-};
 
 use crate::{
 	object::{List, Literal},
@@ -221,10 +220,10 @@ pub enum SerializationError {
 	InvalidJson(linked_data::ContextIris, json_syntax::parse::Error),
 
 	#[error("invalid boolean value")]
-	InvalidBoolean(linked_data::ContextIris, String),
+	InvalidBoolean(linked_data::ContextIris, alloc::string::String),
 
 	#[error("invalid number value")]
-	Number(linked_data::ContextIris, String),
+	Number(linked_data::ContextIris, alloc::string::String),
 }
 
 #[derive(Clone, Copy)]

@@ -1,9 +1,9 @@
 use crate::{Id, ValidId};
 use contextual::{AsRefWithContext, DisplayWithContext, WithContext};
+use core::fmt;
 use iref::IriBuf;
 use json_ld_syntax::Keyword;
 use rdf_types::{vocabulary::Vocabulary, BlankIdBuf};
-use std::fmt;
 
 /// Identifier, keyword or `@null`.
 #[derive(Clone, PartialEq, Eq, Hash)]
@@ -61,7 +61,7 @@ impl<I, B> Term<I, B> {
 
 impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> DisplayWithContext<N> for Term<T, B> {
 	fn fmt_with(&self, vocabulary: &N, f: &mut fmt::Formatter) -> fmt::Result {
-		use std::fmt::Display;
+		use core::fmt::Display;
 		match self {
 			Self::Null => write!(f, "null"),
 			Self::Id(id) => id.with(vocabulary).fmt(f),

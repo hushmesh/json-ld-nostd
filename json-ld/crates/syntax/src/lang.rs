@@ -12,7 +12,7 @@ pub struct LenientLangTag(str);
 impl LenientLangTag {
 	pub fn new(s: &str) -> (&Self, Option<InvalidLangTag<&str>>) {
 		let err = LangTag::new(s).err();
-		(unsafe { std::mem::transmute::<&str, &Self>(s) }, err)
+		(unsafe { core::mem::transmute::<&str, &Self>(s) }, err)
 	}
 
 	pub fn as_bytes(&self) -> &[u8] {
@@ -53,7 +53,7 @@ impl Ord for LenientLangTag {
 }
 
 impl Hash for LenientLangTag {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		case_insensitive_hash(self.as_bytes(), state)
 	}
 }
@@ -97,7 +97,7 @@ impl LenientLangTagBuf {
 	}
 
 	pub fn as_lenient_lang_tag_ref(&self) -> &LenientLangTag {
-		unsafe { std::mem::transmute(self.0.as_str()) }
+		unsafe { core::mem::transmute(self.0.as_str()) }
 	}
 
 	pub fn into_string(self) -> String {
@@ -140,7 +140,7 @@ impl Ord for LenientLangTagBuf {
 }
 
 impl Hash for LenientLangTagBuf {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.as_lenient_lang_tag_ref().hash(state)
 	}
 }

@@ -1,9 +1,9 @@
 use super::Term;
 use crate::{Id, ValidId};
+use core::convert::TryFrom;
 use iref::IriBuf;
 use json_ld_syntax::Keyword;
-use std::convert::TryFrom;
-use std::fmt;
+use core::fmt;
 
 /// Object type.
 ///

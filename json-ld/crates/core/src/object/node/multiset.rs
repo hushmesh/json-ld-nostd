@@ -1,10 +1,11 @@
+use alloc::vec::Vec;
 use core::hash::{BuildHasher, Hash, Hasher};
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct DeterministicHasherBuilder;
 
 impl BuildHasher for DeterministicHasherBuilder {
-	type Hasher = std::collections::hash_map::DefaultHasher;
+	type Hasher = hashbrown::hash_map::DefaultHashBuilder;
 
 	fn build_hasher(&self) -> Self::Hasher {
 		Self::Hasher::new()
@@ -126,7 +127,7 @@ impl<'a, T, S> IntoIterator for &'a mut Multiset<T, S> {
 
 impl<T, S> IntoIterator for Multiset<T, S> {
 	type Item = T;
-	type IntoIter = std::vec::IntoIter<T>;
+	type IntoIter = alloc::vec::IntoIter<T>;
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.data.into_iter()
@@ -192,7 +193,7 @@ pub(crate) fn compare_unordered_opt<T: PartialEq<U>, U>(a: Option<&[T]>, b: Opti
 impl<T: Eq, S> Eq for Multiset<T, S> {}
 
 impl<T: Hash, S: BuildHasher> Hash for Multiset<T, S> {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		let mut hash = 0u64;
 
 		for item in self {

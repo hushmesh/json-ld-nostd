@@ -4,10 +4,12 @@ use super::BindingRef;
 use super::Context;
 use super::Key;
 use crate::{Container, Direction, LenientLangTag, LenientLangTagBuf, Nullable, Term, Type};
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::fmt;
-use std::hash::Hash;
+use alloc::borrow::ToOwned;
+use alloc::vec::Vec;
+use core::cmp::Ordering;
+use core::fmt;
+use core::hash::Hash;
+use hashbrown::HashMap;
 
 #[derive(Clone, PartialEq, Eq)]
 pub enum TypeSelection<T = IriBuf> {

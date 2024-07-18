@@ -1,7 +1,7 @@
 cfg_if::cfg_if! {
     if #[cfg(feature="std")] {
         use std::io::{Result, Error, ErrorKind};
-        use std::convert::TryFrom;
+        use core::convert::TryFrom;
     } else {
         use no_std_io::io::{Result, Error, ErrorKind};
         use core::convert::TryFrom;

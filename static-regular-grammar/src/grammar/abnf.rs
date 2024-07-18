@@ -246,7 +246,7 @@ impl SccGraph for DependencyGraph {
 
 	type Vertices<'a> = std::ops::Range<usize>;
 
-	type Successors<'a> = std::iter::Copied<std::slice::Iter<'a, usize>>;
+	type Successors<'a> = core::iter::Copied<core::slice::Iter<'a, usize>>;
 
 	fn vertices(&self) -> Self::Vertices<'_> {
 		0..self.nodes.len()

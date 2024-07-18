@@ -1,8 +1,10 @@
 use crate::object::{InvalidExpandedJson, TryFromJson, TryFromJsonObject};
+use alloc::string::String;
+use alloc::string::ToString;
+use core::convert::{TryFrom, TryInto};
+use core::ops::{Deref, DerefMut};
 use json_ld_syntax::{IntoJson, IntoJsonWithContext};
 use rdf_types::VocabularyMut;
-use std::convert::{TryFrom, TryInto};
-use std::ops::{Deref, DerefMut};
 
 /// Indexed objects.
 ///

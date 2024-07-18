@@ -1,13 +1,15 @@
 use super::{InvalidExpandedJson, Traverse, TryFromJson, TryFromJsonObject};
 use crate::{object, utils, Id, Indexed, IndexedObject, Object, Objects, Relabel, Term};
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use contextual::{IntoRefWithContext, WithContext};
+use core::convert::TryFrom;
+use core::hash::{Hash, Hasher};
 use educe::Educe;
 use indexmap::IndexSet;
 use iref::IriBuf;
 use json_ld_syntax::{IntoJson, IntoJsonWithContext, Keyword};
 use rdf_types::{BlankIdBuf, Generator, Subject, Vocabulary, VocabularyMut};
-use std::convert::TryFrom;
-use std::hash::{Hash, Hasher};
 
 pub mod multiset;
 pub mod properties;
@@ -143,7 +145,7 @@ impl<T, B> Node<T, B> {
 		}
 
 		if let Some(graph) = self.graph_mut() {
-			*graph = std::mem::take(graph)
+			*graph = core::mem::take(graph)
 				.into_iter()
 				.map(|mut o| {
 					o.identify_all_with(vocabulary, generator);
@@ -153,7 +155,7 @@ impl<T, B> Node<T, B> {
 		}
 
 		if let Some(included) = self.included_mut() {
-			*included = std::mem::take(included)
+			*included = core::mem::take(included)
 				.into_iter()
 				.map(|mut n| {
 					n.identify_all_with(vocabulary, generator);
@@ -669,7 +671,7 @@ impl<T, B> Relabel<T, B> for Node<T, B> {
 		}
 
 		if let Some(graph) = self.graph_mut() {
-			*graph = std::mem::take(graph)
+			*graph = core::mem::take(graph)
 				.into_iter()
 				.map(|mut o| {
 					o.relabel_with(vocabulary, generator, relabeling);
@@ -679,7 +681,7 @@ impl<T, B> Relabel<T, B> for Node<T, B> {
 		}
 
 		if let Some(included) = self.included_mut() {
-			*included = std::mem::take(included)
+			*included = core::mem::take(included)
 				.into_iter()
 				.map(|mut n| {
 					n.relabel_with(vocabulary, generator, relabeling);
@@ -1145,11 +1147,11 @@ pub enum SubFragments<'a, T, B> {
 		Option<EntryKeyRef<'a, T, B>>,
 		Option<EntryValueRef<'a, T, B>>,
 	),
-	Type(std::slice::Iter<'a, Id<T, B>>),
+	Type(core::slice::Iter<'a, Id<T, B>>),
 	Graph(indexmap::set::Iter<'a, IndexedObject<T, B>>),
 	Included(indexmap::set::Iter<'a, IndexedNode<T, B>>),
 	Reverse(reverse_properties::Iter<'a, T, B>),
-	Property(std::slice::Iter<'a, IndexedObject<T, B>>),
+	Property(core::slice::Iter<'a, IndexedObject<T, B>>),
 }
 
 impl<'a, T, B> Iterator for SubFragments<'a, T, B> {
@@ -1210,11 +1212,11 @@ impl<T: Hash, B: Hash> Hash for Node<T, B> {
 }
 
 /// Iterator through indexed nodes.
-pub struct Nodes<'a, T, B>(Option<std::slice::Iter<'a, IndexedNode<T, B>>>);
+pub struct Nodes<'a, T, B>(Option<core::slice::Iter<'a, IndexedNode<T, B>>>);
 
 impl<'a, T, B> Nodes<'a, T, B> {
 	#[inline(always)]
-	pub(crate) fn new(inner: Option<std::slice::Iter<'a, IndexedNode<T, B>>>) -> Self {
+	pub(crate) fn new(inner: Option<core::slice::Iter<'a, IndexedNode<T, B>>>) -> Self {
 		Self(inner)
 	}
 }

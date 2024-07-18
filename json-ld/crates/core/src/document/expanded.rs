@@ -1,12 +1,12 @@
 use crate::object::{FragmentRef, InvalidExpandedJson, Traverse};
 use crate::{Id, Indexed, IndexedObject, Node, Object, Relabel, TryFromJson};
+use core::hash::Hash;
 use hashbrown::HashMap;
+use hashbrown::HashSet;
 use indexmap::IndexSet;
 use iref::IriBuf;
 use rdf_types::vocabulary::VocabularyMut;
 use rdf_types::{BlankIdBuf, Generator, Vocabulary};
-use std::collections::HashSet;
-use std::hash::Hash;
 
 /// Result of the document expansion algorithm.
 ///
@@ -73,7 +73,7 @@ impl<T, B> ExpandedDocument<T, B> {
 		T: Eq + Hash,
 		B: Eq + Hash,
 	{
-		let objects = std::mem::take(&mut self.0);
+		let objects = core::mem::take(&mut self.0);
 		for mut object in objects {
 			object.identify_all_with(vocabulary, generator);
 			self.0.insert(object);
@@ -104,7 +104,7 @@ impl<T, B> ExpandedDocument<T, B> {
 		T: Clone + Eq + Hash,
 		B: Clone + Eq + Hash,
 	{
-		let objects = std::mem::take(&mut self.0);
+		let objects = core::mem::take(&mut self.0);
 		let mut relabeling = HashMap::new();
 		let mut buffer = ryu_js::Buffer::new();
 		for mut object in objects {
@@ -137,7 +137,7 @@ impl<T, B> ExpandedDocument<T, B> {
 		T: Clone + Eq + Hash,
 		B: Clone + Eq + Hash,
 	{
-		let objects = std::mem::take(&mut self.0);
+		let objects = core::mem::take(&mut self.0);
 		let mut relabeling = HashMap::new();
 		for mut object in objects {
 			object.relabel_with(vocabulary, generator, &mut relabeling);
@@ -165,7 +165,7 @@ impl<T, B> ExpandedDocument<T, B> {
 		T: Eq + Hash,
 		B: Eq + Hash,
 	{
-		let objects = std::mem::take(&mut self.0);
+		let objects = core::mem::take(&mut self.0);
 		for mut object in objects {
 			object.canonicalize_with(buffer);
 			self.0.insert(object);

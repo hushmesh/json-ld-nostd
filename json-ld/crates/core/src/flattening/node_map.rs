@@ -1,13 +1,17 @@
 use super::Environment;
 use crate::{object, ExpandedDocument, Id, Indexed, IndexedNode, IndexedObject, Node, Object};
+use alloc::borrow::ToOwned;
+use alloc::string::String;
+use alloc::string::ToString;
+use alloc::vec::Vec;
+use core::hash::Hash;
 use educe::Educe;
+use hashbrown::HashMap;
 use indexmap::IndexSet;
 use rdf_types::{
 	vocabulary::{BlankIdVocabulary, IriVocabulary},
 	Generator, Vocabulary,
 };
-use std::collections::HashMap;
-use std::hash::Hash;
 
 /// Conflicting indexes error.
 ///
@@ -49,7 +53,7 @@ impl<T, B> NodeMap<T, B> {
 		}
 	}
 
-	pub fn iter_named(&self) -> std::collections::hash_map::Iter<Id<T, B>, NodeMapGraph<T, B>> {
+	pub fn iter_named(&self) -> hashbrown::hash_map::Iter<Id<T, B>, NodeMapGraph<T, B>> {
 		self.graphs.iter()
 	}
 }
@@ -70,7 +74,7 @@ impl<T: Eq + Hash, B: Eq + Hash> NodeMap<T, B> {
 	}
 
 	pub fn declare_graph(&mut self, id: Id<T, B>) {
-		if let std::collections::hash_map::Entry::Vacant(entry) = self.graphs.entry(id) {
+		if let hashbrown::hash_map::Entry::Vacant(entry) = self.graphs.entry(id) {
 			entry.insert(NodeMapGraph::new());
 		}
 	}
@@ -95,7 +99,7 @@ impl<T: Eq + Hash, B: Eq + Hash> NodeMap<T, B> {
 
 pub struct Iter<'a, T, B> {
 	default_graph: Option<&'a NodeMapGraph<T, B>>,
-	graphs: std::collections::hash_map::Iter<'a, Id<T, B>, NodeMapGraph<T, B>>,
+	graphs: hashbrown::hash_map::Iter<'a, Id<T, B>, NodeMapGraph<T, B>>,
 }
 
 impl<'a, T, B> Iterator for Iter<'a, T, B> {
@@ -120,7 +124,7 @@ impl<'a, T, B> IntoIterator for &'a NodeMap<T, B> {
 
 pub struct IntoIter<T, B> {
 	default_graph: Option<NodeMapGraph<T, B>>,
-	graphs: std::collections::hash_map::IntoIter<Id<T, B>, NodeMapGraph<T, B>>,
+	graphs: hashbrown::hash_map::IntoIter<Id<T, B>, NodeMapGraph<T, B>>,
 }
 
 impl<T, B> Iterator for IntoIter<T, B> {
@@ -270,14 +274,12 @@ impl<T: Eq + Hash, B: Eq + Hash> NodeMapGraph<T, B> {
 	}
 }
 
-pub type NodeMapGraphNodes<'a, T, B> =
-	std::collections::hash_map::Values<'a, Id<T, B>, IndexedNode<T, B>>;
-pub type IntoNodeMapGraphNodes<T, B> =
-	std::collections::hash_map::IntoValues<Id<T, B>, IndexedNode<T, B>>;
+pub type NodeMapGraphNodes<'a, T, B> = hashbrown::hash_map::Values<'a, Id<T, B>, IndexedNode<T, B>>;
+pub type IntoNodeMapGraphNodes<T, B> = hashbrown::hash_map::IntoValues<Id<T, B>, IndexedNode<T, B>>;
 
 impl<T, B> IntoIterator for NodeMapGraph<T, B> {
 	type Item = (Id<T, B>, IndexedNode<T, B>);
-	type IntoIter = std::collections::hash_map::IntoIter<Id<T, B>, IndexedNode<T, B>>;
+	type IntoIter = hashbrown::hash_map::IntoIter<Id<T, B>, IndexedNode<T, B>>;
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.nodes.into_iter()
@@ -286,7 +288,7 @@ impl<T, B> IntoIterator for NodeMapGraph<T, B> {
 
 impl<'a, T, B> IntoIterator for &'a NodeMapGraph<T, B> {
 	type Item = (&'a Id<T, B>, &'a IndexedNode<T, B>);
-	type IntoIter = std::collections::hash_map::Iter<'a, Id<T, B>, IndexedNode<T, B>>;
+	type IntoIter = hashbrown::hash_map::Iter<'a, Id<T, B>, IndexedNode<T, B>>;
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.nodes.iter()

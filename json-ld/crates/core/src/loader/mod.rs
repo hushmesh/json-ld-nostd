@@ -1,16 +1,23 @@
+use alloc::borrow::Cow;
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use core::future::Future;
+use core::hash::Hash;
+use core::pin::Pin;
 use hashbrown::HashSet;
 use iref::{Iri, IriBuf};
 use mime::Mime;
 use rdf_types::vocabulary::{IriVocabulary, IriVocabularyMut};
 use static_iref::iri;
-use std::{borrow::Cow, hash::Hash};
 
 pub mod chain;
+#[cfg(feature = "std")]
 pub mod fs;
 pub mod map;
 pub mod none;
 
 pub use chain::ChainLoader;
+#[cfg(feature = "std")]
 pub use fs::FsLoader;
 pub use none::NoLoader;
 
@@ -412,7 +419,14 @@ impl<I> Profile<I> {
 	}
 }
 
+#[cfg(feature = "std")]
 pub type LoadErrorCause = Box<dyn std::error::Error + Send + Sync>;
+
+#[cfg(not(feature = "std"))]
+pub(crate) trait Convenient: core::fmt::Display + core::fmt::Debug + Send + Sync {}
+
+#[cfg(not(feature = "std"))]
+pub type LoadErrorCause = Box<dyn Convenient>;
 
 /// Loading error.
 #[derive(Debug, thiserror::Error)]
@@ -423,7 +437,16 @@ pub struct LoadError {
 }
 
 impl LoadError {
+	#[cfg(feature = "std")]
 	pub fn new(target: IriBuf, cause: impl 'static + std::error::Error + Send + Sync) -> Self {
+		Self {
+			target,
+			cause: Box::new(cause),
+		}
+	}
+
+	#[cfg(not(feature = "std"))]
+	pub fn new(target: IriBuf, cause: impl 'static + Convenient) -> Self {
 		Self {
 			target,
 			cause: Box::new(cause),
@@ -452,47 +475,68 @@ impl LoadError {
 ///     This requires the `reqwest` feature to be enabled.
 pub trait Loader {
 	/// Loads the document behind the given IRI, using the given vocabulary.
-	#[allow(async_fn_in_trait)]
-	async fn load_with<V>(&self, vocabulary: &mut V, url: V::Iri) -> LoadingResult<V::Iri>
+	fn load_with<'a, V>(
+		&'a self,
+		vocabulary: &'a mut V,
+		url: V::Iri,
+	) -> Pin<Box<dyn Future<Output = LoadingResult<V::Iri>> + 'a>>
 	where
 		V: IriVocabularyMut,
 		V::Iri: Clone + Eq + Hash,
 	{
-		let lexical_url = vocabulary.iri(&url).unwrap();
-		let document = self.load(lexical_url).await?;
-		Ok(document.map_iris(|i| vocabulary.insert_owned(i)))
+		Box::pin(async move {
+			let lexical_url = vocabulary.iri(&url).unwrap();
+			let document = self.load(lexical_url).await?;
+			Ok(document.map_iris(|i| vocabulary.insert_owned(i)))
+		})
 	}
 
 	/// Loads the document behind the given IRI.
-	#[allow(async_fn_in_trait)]
-	async fn load(&self, url: &Iri) -> Result<RemoteDocument<IriBuf>, LoadError>;
+	fn load<'a>(
+		&'a self,
+		url: &'a Iri,
+	) -> Pin<Box<dyn Future<Output = Result<RemoteDocument<IriBuf>, LoadError>> + 'a>>;
 }
 
 impl<'l, L: Loader> Loader for &'l L {
-	async fn load_with<V>(&self, vocabulary: &mut V, url: V::Iri) -> LoadingResult<V::Iri>
+	fn load_with<'a, V>(
+		&'a self,
+		vocabulary: &'a mut V,
+		url: V::Iri,
+	) -> Pin<Box<dyn Future<Output = LoadingResult<V::Iri>> + 'a>>
 	where
 		V: IriVocabularyMut,
 		V::Iri: Clone + Eq + Hash,
 	{
-		L::load_with(self, vocabulary, url).await
+		Box::pin(async move { L::load_with(self, vocabulary, url).await })
 	}
 
-	async fn load(&self, url: &Iri) -> Result<RemoteDocument<IriBuf>, LoadError> {
-		L::load(self, url).await
+	fn load<'a>(
+		&'a self,
+		url: &'a Iri,
+	) -> Pin<Box<dyn Future<Output = Result<RemoteDocument<IriBuf>, LoadError>> + 'a>> {
+		Box::pin(async move { L::load(self, url).await })
 	}
 }
 
 impl<'l, L: Loader> Loader for &'l mut L {
-	async fn load_with<V>(&self, vocabulary: &mut V, url: V::Iri) -> LoadingResult<V::Iri>
+	fn load_with<'a, V>(
+		&'a self,
+		vocabulary: &'a mut V,
+		url: V::Iri,
+	) -> Pin<Box<dyn Future<Output = LoadingResult<V::Iri>> + 'a>>
 	where
 		V: IriVocabularyMut,
 		V::Iri: Clone + Eq + Hash,
 	{
-		L::load_with(self, vocabulary, url).await
+		Box::pin(async move { L::load_with(self, vocabulary, url).await })
 	}
 
-	async fn load(&self, url: &Iri) -> Result<RemoteDocument<IriBuf>, LoadError> {
-		L::load(self, url).await
+	fn load<'a>(
+		&'a self,
+		url: &'a Iri,
+	) -> Pin<Box<dyn Future<Output = Result<RemoteDocument<IriBuf>, LoadError>> + 'a>> {
+		Box::pin(async move { L::load(self, url).await })
 	}
 }
 

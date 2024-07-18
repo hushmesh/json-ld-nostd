@@ -1,6 +1,11 @@
 use crate::object::{InvalidExpandedJson, TryFromJson};
 use crate::Term;
+use alloc::string::String;
+use alloc::string::ToString;
 use contextual::{AsRefWithContext, DisplayWithContext, WithContext};
+use core::convert::TryFrom;
+use core::fmt;
+use core::hash::Hash;
 use hashbrown::HashMap;
 use iref::{Iri, IriBuf};
 use json_ld_syntax::IntoJsonWithContext;
@@ -8,9 +13,6 @@ use rdf_types::{
 	vocabulary::{BlankIdVocabulary, IriVocabulary},
 	BlankId, BlankIdBuf, Generator, InvalidBlankId, Vocabulary, VocabularyMut,
 };
-use std::convert::TryFrom;
-use std::fmt;
-use std::hash::Hash;
 
 pub use rdf_types::Id as ValidId;
 
@@ -44,7 +46,7 @@ pub enum Id<I = IriBuf, B = BlankIdBuf> {
 
 #[allow(clippy::derived_hash_with_manual_eq)]
 impl<I: Hash, B: Hash> Hash for Id<I, B> {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		match self {
 			Self::Valid(id) => id.hash(state),
 			Self::Invalid(id) => id.hash(state),

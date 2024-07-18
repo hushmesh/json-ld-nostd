@@ -1,7 +1,9 @@
 use rdf_types::{Generator, Vocabulary};
 
 use crate::{IdentifyAll, IndexedNode, Relabel};
-use std::{collections::HashSet, hash::Hash};
+use alloc::vec::Vec;
+use core::hash::Hash;
+use hashbrown::HashSet;
 
 /// Result of the document flattening algorithm.
 ///

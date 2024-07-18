@@ -2,8 +2,8 @@ use crate::context::definition::KeyOrKeywordRef;
 use crate::{CompactIri, ExpandableRef, Keyword};
 use iref::Iri;
 use rdf_types::BlankId;
-use std::fmt;
-use std::hash::Hash;
+use core::fmt;
+use core::hash::Hash;
 
 #[derive(Clone, PartialOrd, Ord, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -85,7 +85,7 @@ impl PartialEq for Id {
 impl Eq for Id {}
 
 impl Hash for Id {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.as_str().hash(state)
 	}
 }

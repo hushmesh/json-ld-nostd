@@ -3,7 +3,7 @@ use crate::{ActiveProperty, Error, Loader, Options, WarningHandler};
 use json_ld_core::{Context, Environment, ExpandedDocument, IndexedObject, Object};
 use json_syntax::Value;
 use rdf_types::VocabularyMut;
-use std::hash::Hash;
+use core::hash::Hash;
 
 /// Expand the given JSON-LD document.
 ///

@@ -43,7 +43,7 @@ impl PartialEq for Version {
 impl Eq for Version {}
 
 impl Hash for Version {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.into_str().hash(state)
 	}
 }

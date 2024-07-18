@@ -7,9 +7,9 @@ use crate::expansion::{self, Expand};
 use crate::IntoDocumentResult;
 use crate::{Context, Flatten, Loader, RemoteDocument, RemoteDocumentReference};
 use contextual::WithContext;
+use core::hash::Hash;
 use json_ld_core::{Document, RemoteContextReference};
 use rdf_types::{Generator, VocabularyMut};
-use std::hash::Hash;
 
 impl<I> JsonLdProcessor<I> for RemoteDocument<I> {
 	async fn compare_full<N>(

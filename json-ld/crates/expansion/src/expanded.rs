@@ -64,7 +64,7 @@ impl<'a, T, B> IntoIterator for &'a Expanded<T, B> {
 pub enum Iter<'a, T, B> {
 	Null,
 	Object(Option<&'a IndexedObject<T, B>>),
-	Array(std::slice::Iter<'a, IndexedObject<T, B>>),
+	Array(core::slice::Iter<'a, IndexedObject<T, B>>),
 }
 
 impl<'a, T, B> Iterator for Iter<'a, T, B> {
@@ -75,7 +75,7 @@ impl<'a, T, B> Iterator for Iter<'a, T, B> {
 			Iter::Null => None,
 			Iter::Object(ref mut o) => {
 				let mut result = None;
-				std::mem::swap(o, &mut result);
+				core::mem::swap(o, &mut result);
 				result
 			}
 			Iter::Array(ref mut it) => it.next(),
@@ -86,7 +86,7 @@ impl<'a, T, B> Iterator for Iter<'a, T, B> {
 pub enum IntoIter<T, B> {
 	Null,
 	Object(Option<IndexedObject<T, B>>),
-	Array(std::vec::IntoIter<IndexedObject<T, B>>),
+	Array(alloc::vec::IntoIter<IndexedObject<T, B>>),
 }
 
 impl<T, B> Iterator for IntoIter<T, B> {
@@ -97,7 +97,7 @@ impl<T, B> Iterator for IntoIter<T, B> {
 			IntoIter::Null => None,
 			IntoIter::Object(ref mut o) => {
 				let mut result = None;
-				std::mem::swap(o, &mut result);
+				core::mem::swap(o, &mut result);
 				result
 			}
 			IntoIter::Array(ref mut it) => it.next(),

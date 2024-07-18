@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use json_syntax::Value;
 
 pub fn simple_json_ld_eq(a: &Value, b: &Value) -> bool {

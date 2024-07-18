@@ -75,7 +75,7 @@ impl<I> ProcessingStack<I> {
 			false
 		} else {
 			let mut head = None;
-			std::mem::swap(&mut head, &mut self.head);
+			core::mem::swap(&mut head, &mut self.head);
 			self.head = Some(Arc::new(StackNode::new(head, url)));
 			true
 		}

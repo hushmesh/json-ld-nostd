@@ -1,6 +1,11 @@
 use super::{IntoSyntax, Nest};
 use crate::{Container, Direction, LenientLangTagBuf, Nullable, Term, Type};
+use alloc::boxed::Box;
+use alloc::string::ToString;
 use contextual::WithContext;
+use core::hash::Hash;
+use core::{borrow::Borrow, fmt};
+use hashbrown::HashMap;
 use iref::IriBuf;
 use json_ld_syntax::{
 	context::{
@@ -10,9 +15,6 @@ use json_ld_syntax::{
 	KeywordType,
 };
 use rdf_types::{vocabulary::IriVocabulary, BlankIdBuf, Id, Vocabulary};
-use std::collections::HashMap;
-use std::hash::Hash;
-use std::{borrow::Borrow, fmt};
 
 /// Term binding.
 pub enum Binding<T = IriBuf, B = BlankIdBuf> {
@@ -173,7 +175,7 @@ impl<T, B> Definitions<T, B> {
 
 	/// Inserts the given `@type` definition.
 	pub fn insert_type(&mut self, definition: TypeTermDefinition) -> Option<TypeTermDefinition> {
-		std::mem::replace(&mut self.type_, Some(definition))
+		core::mem::replace(&mut self.type_, Some(definition))
 	}
 
 	/// Sets the given `term` normal definition.
@@ -193,7 +195,7 @@ impl<T, B> Definitions<T, B> {
 		&mut self,
 		definition: Option<TypeTermDefinition>,
 	) -> Option<TypeTermDefinition> {
-		std::mem::replace(&mut self.type_, definition)
+		core::mem::replace(&mut self.type_, definition)
 	}
 
 	/// Returns an iterator over the term definitions.
@@ -222,7 +224,7 @@ impl<T, B> Definitions<T, B> {
 
 pub struct Iter<'a, T, B> {
 	type_: Option<&'a TypeTermDefinition>,
-	normal: std::collections::hash_map::Iter<'a, Key, NormalTermDefinition<T, B>>,
+	normal: hashbrown::hash_map::Iter<'a, Key, NormalTermDefinition<T, B>>,
 }
 
 impl<'a, T, B> Iterator for Iter<'a, T, B> {
@@ -247,7 +249,7 @@ impl<'a, T, B> IntoIterator for &'a Definitions<T, B> {
 
 pub struct IntoIter<T, B> {
 	type_: Option<TypeTermDefinition>,
-	normal: std::collections::hash_map::IntoIter<Key, NormalTermDefinition<T, B>>,
+	normal: hashbrown::hash_map::IntoIter<Key, NormalTermDefinition<T, B>>,
 }
 
 impl<T, B> Iterator for IntoIter<T, B> {

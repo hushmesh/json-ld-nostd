@@ -1,4 +1,4 @@
-use std::hash::Hash;
+use core::hash::Hash;
 
 use super::{DefinedTerms, Environment, Merged};
 use crate::{Error, Options, ProcessingStack, Warning, WarningHandler};

@@ -3,13 +3,16 @@ mod definition;
 pub mod inverse;
 
 use crate::{Direction, LenientLangTag, LenientLangTagBuf, Term};
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::string::ToString;
 use contextual::WithContext;
+use core::borrow::Borrow;
+use core::hash::Hash;
 use iref::IriBuf;
 use json_ld_syntax::{KeywordType, Nullable};
 use once_cell::sync::OnceCell;
 use rdf_types::{BlankIdBuf, Id, Vocabulary};
-use std::borrow::Borrow;
-use std::hash::Hash;
 
 pub use json_ld_syntax::context::{
 	definition::{Key, KeyOrType, Type},

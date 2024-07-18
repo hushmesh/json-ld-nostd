@@ -2,8 +2,8 @@ use crate::{
 	flattening::NodeMap, object, ExpandedDocument, FlattenedDocument, Id, Indexed, IndexedNode,
 	IndexedObject, Node, Object,
 };
+use core::hash::Hash;
 use smallvec::SmallVec;
-use std::hash::Hash;
 
 /// JSON-LD Quad.
 ///
@@ -80,16 +80,16 @@ enum QuadsFrame<'a, T, B> {
 	),
 	IndexedObjectSlice(
 		Option<&'a Id<T, B>>,
-		std::slice::Iter<'a, IndexedObject<T, B>>,
+		core::slice::Iter<'a, IndexedObject<T, B>>,
 	),
 	IndexedNodeSlice(
 		Option<&'a Id<T, B>>,
-		std::slice::Iter<'a, IndexedNode<T, B>>,
+		core::slice::Iter<'a, IndexedNode<T, B>>,
 	),
 	NodeTypes(
 		Option<&'a Id<T, B>>,
 		&'a Id<T, B>,
-		std::slice::Iter<'a, Id<T, B>>,
+		core::slice::Iter<'a, Id<T, B>>,
 	),
 	NodeProperties(
 		Option<&'a Id<T, B>>,
@@ -105,13 +105,13 @@ enum QuadsFrame<'a, T, B> {
 		Option<&'a Id<T, B>>,
 		&'a Id<T, B>,
 		&'a Id<T, B>,
-		std::slice::Iter<'a, IndexedObject<T, B>>,
+		core::slice::Iter<'a, IndexedObject<T, B>>,
 	),
 	NodeReversePropertySubjects(
 		Option<&'a Id<T, B>>,
 		&'a Node<T, B>,
 		&'a Id<T, B>,
-		std::slice::Iter<'a, IndexedNode<T, B>>,
+		core::slice::Iter<'a, IndexedNode<T, B>>,
 	),
 }
 

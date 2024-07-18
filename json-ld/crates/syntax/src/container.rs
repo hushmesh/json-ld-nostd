@@ -122,7 +122,7 @@ impl Container {
 
 pub enum SubValues<'a> {
 	None,
-	Many(std::slice::Iter<'a, ContainerKind>),
+	Many(core::slice::Iter<'a, ContainerKind>),
 }
 
 impl<'a> Iterator for SubValues<'a> {

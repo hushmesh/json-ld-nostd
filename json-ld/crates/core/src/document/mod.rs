@@ -1,5 +1,5 @@
-use std::ops::Deref;
-use std::{borrow::Borrow, hash::Hash};
+use core::ops::Deref;
+use core::{borrow::Borrow, hash::Hash};
 
 use iref::IriBuf;
 use linked_data::{LinkedData, LinkedDataGraph, LinkedDataResource, LinkedDataSubject};

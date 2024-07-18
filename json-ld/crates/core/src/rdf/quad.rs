@@ -1,13 +1,13 @@
 use super::{RdfDirection, ValidId, Value};
 use crate::{flattening::NodeMap, ExpandedDocument, FlattenedDocument, LdQuads};
+use alloc::borrow::Cow;
+use core::convert::TryInto;
+use core::hash::Hash;
 use rdf_types::vocabulary::IriVocabularyMut;
 use rdf_types::{
 	vocabulary::{BlankIdVocabulary, IriVocabulary, LiteralVocabulary, LiteralVocabularyMut},
 	Generator, Triple, Vocabulary,
 };
-use std::borrow::Cow;
-use std::convert::TryInto;
-use std::hash::Hash;
 
 pub type Quad<T, B, L> =
 	rdf_types::Quad<ValidId<T, B>, ValidId<T, B>, Value<T, B, L>, ValidId<T, B>>;

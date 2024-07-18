@@ -1,6 +1,7 @@
 use crate::{Id, Indexed, ValidId};
+use alloc::vec::Vec;
+use core::hash::Hash;
 use indexmap::IndexSet;
-use std::hash::Hash;
 
 pub trait MappedEq<T: ?Sized = Self> {
 	type BlankId;

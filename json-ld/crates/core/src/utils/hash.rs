@@ -1,5 +1,5 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+use core::hash::{Hash, Hasher};
+use hashbrown::hash_map::DefaultHashBuilder;
 
 /// Hash a set of items.
 ///
@@ -18,7 +18,7 @@ where
 	// This is satisfied by • = u64::wrapping_add.
 	let mut hash = 0;
 	for item in set {
-		let mut h = DefaultHasher::new();
+		let mut h = DefaultHashBuilder::new();
 		item.hash(&mut h);
 		hash = u64::wrapping_add(hash, h.finish());
 	}
@@ -53,7 +53,7 @@ pub fn hash_map<'a, K: 'a + Hash, V: 'a + Hash, H: Hasher>(
 	// This is satisfied by • = u64::wrapping_add.
 	let mut hash = 0;
 	for entry in map {
-		let mut h = DefaultHasher::new();
+		let mut h = DefaultHashBuilder::new();
 		entry.hash(&mut h);
 		hash = u64::wrapping_add(hash, h.finish());
 	}

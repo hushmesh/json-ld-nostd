@@ -1,7 +1,7 @@
 use crate::CompactIri;
 use iref::Iri;
-use std::fmt;
-use std::hash::Hash;
+use core::fmt;
+use core::hash::Hash;
 
 #[derive(Clone, PartialOrd, Ord, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -41,7 +41,7 @@ impl fmt::Display for Index {
 impl Eq for Index {}
 
 impl Hash for Index {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.as_str().hash(state)
 	}
 }

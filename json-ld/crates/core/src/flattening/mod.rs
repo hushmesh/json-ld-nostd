@@ -1,10 +1,11 @@
 //! Flattening algorithm and related types.
 use crate::flattened::UnorderedFlattenedDocument;
 use crate::{ExpandedDocument, FlattenedDocument, IndexedNode, IndexedObject, Object};
+use alloc::vec::Vec;
 use contextual::WithContext;
+use core::hash::Hash;
+use hashbrown::HashSet;
 use rdf_types::{Generator, Vocabulary};
-use std::collections::HashSet;
-use std::hash::Hash;
 
 mod environment;
 mod node_map;

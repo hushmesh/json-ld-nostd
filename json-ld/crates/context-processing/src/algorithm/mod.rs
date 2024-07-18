@@ -1,4 +1,4 @@
-use std::hash::Hash;
+use core::hash::Hash;
 
 use crate::{
 	Error, Options, Process, Processed, ProcessingResult, ProcessingStack, WarningHandler,

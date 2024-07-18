@@ -70,8 +70,8 @@ impl Link {
 				State::Value => match bytes.next().copied() {
 					Some(b'"') => {
 						params.insert(
-							std::mem::take(&mut current_key),
-							std::mem::take(&mut current_value),
+							core::mem::take(&mut current_key),
+							core::mem::take(&mut current_value),
 						);
 
 						state = State::NextParam

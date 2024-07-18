@@ -1,4 +1,11 @@
 //! JSON-LD core types.
+
+#![cfg_attr(not(feature = "std"), no_std)]
+
+extern crate alloc;
+
+extern crate thiserror_nostd_notrait as thiserror;
+
 pub use json_ld_syntax::{Direction, LenientLangTag, LenientLangTagBuf, Nullable};
 
 mod container;

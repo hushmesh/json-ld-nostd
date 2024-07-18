@@ -3,10 +3,12 @@ use crate::{
 	object::{InvalidExpandedJson, TryFromJson, TryFromJsonObject},
 	Id, IndexedObject,
 };
+use alloc::string::ToString;
+use alloc::vec::Vec;
+use core::hash::{Hash, Hasher};
 use educe::Educe;
 use indexmap::IndexMap;
 use rdf_types::VocabularyMut;
-use std::hash::{Hash, Hasher};
 
 pub type PropertyObjects<T, B> = Multiset<IndexedObject<T, B>>;
 
@@ -319,7 +321,7 @@ impl<'a, T, B> Iterator for Iter<'a, T, B> {
 
 impl<'a, T, B> ExactSizeIterator for Iter<'a, T, B> {}
 
-impl<'a, T, B> std::iter::FusedIterator for Iter<'a, T, B> {}
+impl<'a, T, B> core::iter::FusedIterator for Iter<'a, T, B> {}
 
 /// Iterator over the properties of a node, giving a mutable reference
 /// to the associated objects.

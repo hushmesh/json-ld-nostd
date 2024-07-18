@@ -1,4 +1,4 @@
-use std::hash::Hash;
+use core::hash::Hash;
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct Import;
@@ -11,7 +11,7 @@ impl Import {
 
 #[allow(clippy::derived_hash_with_manual_eq)]
 impl Hash for Import {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.into_str().hash(state)
 	}
 }

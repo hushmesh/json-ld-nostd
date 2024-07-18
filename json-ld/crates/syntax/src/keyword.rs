@@ -1,6 +1,6 @@
+use core::convert::TryFrom;
+use core::fmt;
 use std::borrow::Borrow;
-use std::convert::TryFrom;
-use std::fmt;
 
 #[derive(Clone, Copy, Debug)]
 pub struct NotAKeyword<T>(pub T);

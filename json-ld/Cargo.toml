@@ -36,7 +36,7 @@ locspan.workspace = true
 iref.workspace = true
 rdf-types.workspace = true
 contextual.workspace = true
-thiserror.workspace = true
+thiserror-nostd-notrait.workspace = true
 
 [dev-dependencies]
 log.workspace = true
@@ -85,7 +85,7 @@ mown = "0.2.2"
 hashbrown = "0.12.1"
 smallvec = "1.10"
 log = "0.4.17"
-thiserror = "1.0.38"
+thiserror-nostd-notrait = { version = "1.0", default-features = false }
 serde = "1.0"
 indexmap = "2.0"
 

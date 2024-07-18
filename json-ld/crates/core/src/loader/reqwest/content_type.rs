@@ -67,8 +67,8 @@ impl ContentType {
 				State::QuotedValue => match bytes.next().copied() {
 					Some(b'"') => {
 						params.insert(
-							std::mem::take(&mut current_key),
-							std::mem::take(&mut current_value),
+							core::mem::take(&mut current_key),
+							core::mem::take(&mut current_value),
 						);
 
 						state = State::NextParam
@@ -79,8 +79,8 @@ impl ContentType {
 				State::Value => match bytes.next().copied() {
 					Some(b';') => {
 						params.insert(
-							std::mem::take(&mut current_key),
-							std::mem::take(&mut current_value),
+							core::mem::take(&mut current_key),
+							core::mem::take(&mut current_value),
 						);
 
 						state = State::BeginKey
@@ -88,8 +88,8 @@ impl ContentType {
 					Some(b) => current_value.push(b),
 					None => {
 						params.insert(
-							std::mem::take(&mut current_key),
-							std::mem::take(&mut current_value),
+							core::mem::take(&mut current_key),
+							core::mem::take(&mut current_value),
 						);
 						break;
 					}

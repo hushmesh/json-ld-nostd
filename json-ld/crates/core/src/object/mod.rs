@@ -1,6 +1,9 @@
 //! Nodes, lists and values.
 use crate::{Id, Indexed, LenientLangTag, Relabel};
+use alloc::boxed::Box;
+use alloc::vec::Vec;
 use contextual::{IntoRefWithContext, WithContext};
+use core::hash::Hash;
 use educe::Educe;
 use indexmap::IndexSet;
 use iref::IriBuf;
@@ -8,7 +11,6 @@ use json_ld_syntax::{IntoJsonWithContext, Keyword};
 use json_syntax::Number;
 use rdf_types::{BlankIdBuf, Generator, Subject, Vocabulary, VocabularyMut};
 use smallvec::SmallVec;
-use std::hash::Hash;
 
 pub mod list;
 mod mapped_eq;
@@ -939,7 +941,7 @@ impl<T, B> From<Node<T, B>> for Object<T, B> {
 /// Iterator through the types of an object.
 pub enum Types<'a, T, B> {
 	Value(Option<value::TypeRef<'a, T>>),
-	Node(std::slice::Iter<'a, Id<T, B>>),
+	Node(core::slice::Iter<'a, Id<T, B>>),
 	List,
 }
 
@@ -956,11 +958,11 @@ impl<'a, T, B> Iterator for Types<'a, T, B> {
 }
 
 /// Iterator through indexed objects.
-pub struct Objects<'a, T, B>(Option<std::slice::Iter<'a, IndexedObject<T, B>>>);
+pub struct Objects<'a, T, B>(Option<core::slice::Iter<'a, IndexedObject<T, B>>>);
 
 impl<'a, T, B> Objects<'a, T, B> {
 	#[inline(always)]
-	pub(crate) fn new(inner: Option<std::slice::Iter<'a, IndexedObject<T, B>>>) -> Self {
+	pub(crate) fn new(inner: Option<core::slice::Iter<'a, IndexedObject<T, B>>>) -> Self {
 		Self(inner)
 	}
 }
@@ -1105,7 +1107,7 @@ pub enum SubFragments<'a, T, B> {
 	Object(Option<&'a str>, ObjectSubFragments<'a, T, B>),
 	Value(value::SubFragments<'a, T>),
 	Node(node::SubFragments<'a, T, B>),
-	IndexedNodeList(std::slice::Iter<'a, IndexedNode<T, B>>),
+	IndexedNodeList(core::slice::Iter<'a, IndexedNode<T, B>>),
 }
 
 impl<'a, T, B> Iterator for SubFragments<'a, T, B> {

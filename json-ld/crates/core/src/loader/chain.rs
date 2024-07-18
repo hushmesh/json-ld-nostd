@@ -1,4 +1,7 @@
+use alloc::boxed::Box;
 use core::fmt;
+use core::future::Future;
+use core::pin::Pin;
 
 use crate::{LoadError, LoadErrorCause, LoadingResult};
 use iref::{Iri, IriBuf};
@@ -27,19 +30,26 @@ where
 	L1: Loader,
 	L2: Loader,
 {
-	async fn load(&self, url: &Iri) -> LoadingResult<IriBuf> {
-		match self.0.load(url).await {
-			Ok(doc) => Ok(doc),
-			Err(LoadError { cause: e1, .. }) => match self.1.load(url).await {
+	fn load<'a>(
+		&'a self,
+		url: &'a Iri,
+	) -> Pin<Box<dyn Future<Output = LoadingResult<IriBuf>> + 'a>> {
+		Box::pin(async move {
+			match self.0.load(url).await {
 				Ok(doc) => Ok(doc),
-				Err(LoadError { target, cause: e2 }) => Err(LoadError::new(target, Error(e1, e2))),
-			},
-		}
+				Err(LoadError { cause: e1, .. }) => match self.1.load(url).await {
+					Ok(doc) => Ok(doc),
+					Err(LoadError { target, cause: e2 }) => {
+						Err(LoadError::new(target, Error(e1, e2)))
+					}
+				},
+			}
+		})
 	}
 }
 
 /// Either-or error.
-#[derive(Debug)]
+#[derive(Display, Debug)]
 pub struct Error(pub LoadErrorCause, pub LoadErrorCause);
 
 impl fmt::Display for Error {
@@ -49,4 +59,8 @@ impl fmt::Display for Error {
 	}
 }
 
+#[cfg(feature = "std")]
 impl std::error::Error for Error {}
+
+#[cfg(not(feature = "std"))]
+impl crate::Convenient for Error {}

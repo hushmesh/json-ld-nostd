@@ -1,4 +1,4 @@
-use std::hash::Hash;
+use core::hash::Hash;
 
 use crate::is_keyword;
 
@@ -39,7 +39,7 @@ impl PartialEq for Nest {
 impl Eq for Nest {}
 
 impl Hash for Nest {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.as_str().hash(state)
 	}
 }

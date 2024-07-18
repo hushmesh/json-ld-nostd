@@ -4,7 +4,7 @@
 //! # Usage
 //!
 //! The expansion algorithm is provided by the [`Expand`] trait.
-use std::hash::Hash;
+use core::hash::Hash;
 
 use json_ld_context_processing::Context;
 use json_ld_core::{Environment, ExpandedDocument, Loader, RemoteDocument};

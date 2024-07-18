@@ -23,5 +23,5 @@ rdf-types.workspace = true
 futures.workspace = true
 mown.workspace = true
 contextual.workspace = true
-thiserror.workspace = true
+thiserror-nostd-notrait.workspace = true
 owning_ref = "0.4.1"

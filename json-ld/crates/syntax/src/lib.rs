@@ -1,5 +1,10 @@
 //! This library provide functions to parse JSON-LD contexts
 //! and print JSON-LD documents.
+
+extern crate alloc;
+
+extern crate thiserror_nostd_notrait as thiserror;
+
 mod compact_iri;
 mod compare;
 pub mod container;

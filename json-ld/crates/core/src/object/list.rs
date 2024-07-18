@@ -1,10 +1,11 @@
 use super::{Any, InvalidExpandedJson, MappedEq};
 use crate::{Id, IndexedObject, Relabel, TryFromJson};
+use alloc::vec::Vec;
 use contextual::WithContext;
+use core::hash::Hash;
 use educe::Educe;
 use json_ld_syntax::{IntoJson, IntoJsonWithContext};
 use rdf_types::{Generator, Subject, Vocabulary, VocabularyMut};
-use std::hash::Hash;
 
 #[allow(clippy::derived_hash_with_manual_eq)]
 #[derive(Educe, Debug, Clone, Hash)]
@@ -187,7 +188,7 @@ impl<'a, T, B> IntoIterator for &'a mut List<T, B> {
 
 impl<T, B> IntoIterator for List<T, B> {
 	type Item = IndexedObject<T, B>;
-	type IntoIter = std::vec::IntoIter<IndexedObject<T, B>>;
+	type IntoIter = alloc::vec::IntoIter<IndexedObject<T, B>>;
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.entry.into_iter()

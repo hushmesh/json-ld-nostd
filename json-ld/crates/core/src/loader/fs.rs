@@ -1,10 +1,13 @@
 use super::{Loader, RemoteDocument};
 use crate::{LoadError, LoadingResult};
+use alloc::boxed::Box;
 use iref::{Iri, IriBuf};
 use json_syntax::Parse;
 use std::fs::File;
+use std::future::Future;
 use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
+use std::pin::Pin;
 
 /// Loading error.
 #[derive(Debug, thiserror::Error)]
@@ -67,25 +70,30 @@ impl FsLoader {
 }
 
 impl Loader for FsLoader {
-	async fn load(&self, url: &Iri) -> LoadingResult<IriBuf> {
-		match self.filepath(url) {
-			Some(filepath) => {
-				let file = File::open(filepath)
-					.map_err(|e| LoadError::new(url.to_owned(), Error::IO(e)))?;
-				let mut buf_reader = BufReader::new(file);
-				let mut contents = String::new();
-				buf_reader
-					.read_to_string(&mut contents)
-					.map_err(|e| LoadError::new(url.to_owned(), Error::IO(e)))?;
-				let (doc, _) = json_syntax::Value::parse_str(&contents)
-					.map_err(|e| LoadError::new(url.to_owned(), Error::Parse(e)))?;
-				Ok(RemoteDocument::new(
-					Some(url.to_owned()),
-					Some("application/ld+json".parse().unwrap()),
-					doc,
-				))
+	fn load<'a>(
+		&'a self,
+		url: &'a Iri,
+	) -> Pin<Box<dyn Future<Output = LoadingResult<IriBuf>> + 'a>> {
+		Box::pin(async move {
+			match self.filepath(url) {
+				Some(filepath) => {
+					let file = File::open(filepath)
+						.map_err(|e| LoadError::new(url.to_owned(), Error::IO(e)))?;
+					let mut buf_reader = BufReader::new(file);
+					let mut contents = String::new();
+					buf_reader
+						.read_to_string(&mut contents)
+						.map_err(|e| LoadError::new(url.to_owned(), Error::IO(e)))?;
+					let (doc, _) = json_syntax::Value::parse_str(&contents)
+						.map_err(|e| LoadError::new(url.to_owned(), Error::Parse(e)))?;
+					Ok(RemoteDocument::new(
+						Some(url.to_owned()),
+						Some("application/ld+json".parse().unwrap()),
+						doc,
+					))
+				}
+				None => Err(LoadError::new(url.to_owned(), Error::NoMountPoint)),
 			}
-			None => Err(LoadError::new(url.to_owned(), Error::NoMountPoint)),
-		}
+		})
 	}
 }

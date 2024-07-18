@@ -1,7 +1,7 @@
 use crate::{Id, ValidId, ValidVocabularyId, VocabularyId};
+use core::hash::Hash;
+use hashbrown::HashMap;
 use rdf_types::{Generator, Vocabulary};
-use std::collections::HashMap;
-use std::hash::Hash;
 
 pub struct Environment<'n, N: Vocabulary, G> {
 	vocabulary: &'n mut N,
@@ -25,7 +25,7 @@ where
 	V::BlankId: Clone + Hash + Eq,
 {
 	pub fn assign(&mut self, blank_id: V::BlankId) -> ValidId<V::Iri, V::BlankId> {
-		use std::collections::hash_map::Entry;
+		use hashbrown::hash_map::Entry;
 		match self.map.entry(blank_id) {
 			Entry::Occupied(entry) => entry.get().clone(),
 			Entry::Vacant(entry) => {

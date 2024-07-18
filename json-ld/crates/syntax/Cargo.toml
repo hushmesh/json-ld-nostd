@@ -26,7 +26,7 @@ hashbrown.workspace = true
 educe.workspace = true
 smallvec.workspace = true
 contextual.workspace = true
-thiserror.workspace = true
+thiserror-nostd-notrait.workspace = true
 serde = { workspace = true, features = ["derive"], optional = true }
 indexmap.workspace = true
 decoded-char = "0.1.0"

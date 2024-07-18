@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use json_syntax::print::{
 	pre_compute_array_size, pre_compute_object_size, print_array, print_object,
 	printed_string_size, string_literal, PrecomputeSize, PrecomputeSizeWithContext,
@@ -13,12 +14,12 @@ pub trait PrintWithSizeAndVocabulary<V> {
 	fn fmt_with_size_and(
 		&self,
 		vocabulary: &V,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result;
+	) -> core::fmt::Result;
 }
 
 impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrecomputeSizeWithContext<N>
@@ -42,10 +43,10 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithContext<N> for Expanded
 	fn contextual_fmt_with(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		let mut sizes = Vec::with_capacity(self.count(|i| i.is_json_array() || i.is_json_object()));
 		self.contextual_pre_compute_size(vocabulary, options, &mut sizes);
 		let mut index = 0;
@@ -57,10 +58,10 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithContext<N> for object::
 	fn contextual_fmt_with(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		let mut sizes = Vec::with_capacity(self.count(|i| i.is_json_array() || i.is_json_object()));
 		self.contextual_pre_compute_size(vocabulary, options, &mut sizes);
 		let mut index = 0;
@@ -74,12 +75,12 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		print_array(
 			self.objects().iter().map(|o| o.with(vocabulary)),
 			f,
@@ -106,10 +107,10 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithContext<N> for Id<T, B>
 	fn contextual_fmt_with(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		_options: &Options,
 		_indent: usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		string_literal(self.with(vocabulary).as_str(), f)
 	}
 }
@@ -118,12 +119,12 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N> for I
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		_options: &Options,
 		_indent: usize,
 		_sizes: &[Size],
 		_index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		string_literal(self.with(vocabulary).as_str(), f)
 	}
 }
@@ -154,12 +155,12 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		print_object(
 			self.entries().map(|e| {
 				let (k, v) = e.into_key_value();
@@ -198,12 +199,12 @@ impl<'a, T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			object::IndexedEntryValueRef::Index(s) => string_literal(s, f),
 			object::IndexedEntryValueRef::Object(e) => e
@@ -242,12 +243,12 @@ impl<'a, T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			object::EntryValueRef::Value(v) => v
 				.into_with(vocabulary)
@@ -293,12 +294,12 @@ impl<'a, T, N: IriVocabulary<Iri = T>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			object::value::EntryRef::Value(v) => v.fmt_with_size(f, options, indent, sizes, index),
 			object::value::EntryRef::Type(t) => {
@@ -332,10 +333,10 @@ impl<'a, T, N: IriVocabulary<Iri = T>> PrintWithContext<N> for object::value::Ty
 	fn contextual_fmt_with(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		_options: &Options,
 		_indent: usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			object::value::TypeRef::Id(id) => {
 				string_literal(vocabulary.iri(id).unwrap().as_str(), f)
@@ -358,12 +359,12 @@ impl<'a> PrecomputeSize for object::value::ValueEntryRef<'a> {
 impl<'a> PrintWithSize for object::value::ValueEntryRef<'a> {
 	fn fmt_with_size(
 		&self,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			Self::Literal(l) => l.fmt_with(f, options, indent),
 			Self::LangString(s) => string_literal(s, f),
@@ -386,14 +387,14 @@ impl PrecomputeSize for object::value::Literal {
 impl Print for object::value::Literal {
 	fn fmt_with(
 		&self,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			Self::Null => write!(f, "null"),
 			Self::Boolean(b) => b.fmt_with(f, options, indent),
-			Self::Number(n) => std::fmt::Display::fmt(n, f),
+			Self::Number(n) => core::fmt::Display::fmt(n, f),
 			Self::String(s) => string_literal(s, f),
 		}
 	}
@@ -423,12 +424,12 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N> for o
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		print_object(
 			self.entries().map(|e| {
 				let (k, v) = e.into_key_value();
@@ -469,12 +470,12 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		print_object(
 			self.entries().map(|e| {
 				let (k, v) = e.into_key_value();
@@ -513,12 +514,12 @@ impl<'a, T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			object::node::IndexedEntryValueRef::Index(s) => string_literal(s, f),
 			object::node::IndexedEntryValueRef::Node(e) => e
@@ -568,12 +569,12 @@ impl<'a, T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		match self {
 			object::node::EntryValueRef::Id(v) => v.with(vocabulary).fmt_with(f, options, indent),
 			object::node::EntryValueRef::Type(v) => print_array(
@@ -645,12 +646,12 @@ impl<T, B, N: Vocabulary<Iri = T, BlankId = B>> PrintWithSizeAndContext<N>
 	fn contextual_fmt_with_size(
 		&self,
 		vocabulary: &N,
-		f: &mut std::fmt::Formatter,
+		f: &mut core::fmt::Formatter,
 		options: &Options,
 		indent: usize,
 		sizes: &[Size],
 		index: &mut usize,
-	) -> std::fmt::Result {
+	) -> core::fmt::Result {
 		print_object(
 			self.iter()
 				.map(|(k, v)| (k.into_with(vocabulary).as_str(), v.into_with(vocabulary))),

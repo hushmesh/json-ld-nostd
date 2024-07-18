@@ -1,7 +1,7 @@
 use super::{definition, term_definition, TermDefinition};
 use crate::{Container, ContextEntry, Nullable};
 use json_syntax::print::{string_literal, Options, PrecomputeSize, Print, PrintWithSize, Size};
-use std::fmt;
+use core::fmt;
 
 impl Print for super::Context {
 	fn fmt_with(&self, f: &mut fmt::Formatter, options: &Options, indent: usize) -> fmt::Result {

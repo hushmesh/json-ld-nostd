@@ -1,4 +1,8 @@
-use std::str::FromStr;
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::format;
+use alloc::string::ToString;
+use core::str::FromStr;
 
 use crate::{object::value, Direction, Id, Indexed, IndexedObject, Node, Object, ValidId};
 use iref::{Iri, IriBuf};
@@ -68,7 +72,7 @@ pub enum RdfDirection {
 }
 
 #[derive(Debug, Clone)]
-pub struct InvalidRdfDirection(pub String);
+pub struct InvalidRdfDirection(pub alloc::string::String);
 
 impl FromStr for RdfDirection {
 	type Err = InvalidRdfDirection;
@@ -377,7 +381,7 @@ enum ListItemTriples<'a, T, B, L> {
 struct NestedListTriples<'a, T, B> {
 	head_ref: Option<ValidId<T, B>>,
 	previous: Option<ValidId<T, B>>,
-	iter: std::slice::Iter<'a, IndexedObject<T, B>>,
+	iter: core::slice::Iter<'a, IndexedObject<T, B>>,
 }
 
 struct ListNode<'a, 'i, T, B> {

@@ -1,9 +1,9 @@
 use crate::{CompactIri, Keyword};
+use core::fmt;
+use core::hash::Hash;
 use iref::Iri;
 use rdf_types::BlankId;
 use std::borrow::Borrow;
-use std::fmt;
-use std::hash::Hash;
 
 /// Context key.
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
@@ -53,7 +53,7 @@ impl From<json_syntax::object::Key> for Key {
 
 #[allow(clippy::derived_hash_with_manual_eq)]
 impl Hash for Key {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.as_str().hash(state)
 	}
 }
@@ -173,7 +173,7 @@ impl KeyOrKeyword {
 
 #[allow(clippy::derived_hash_with_manual_eq)]
 impl Hash for KeyOrKeyword {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.as_str().hash(state)
 	}
 }

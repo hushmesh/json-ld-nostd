@@ -3,12 +3,12 @@ use crate::context_processing::{self, Process};
 use crate::expansion;
 use crate::syntax::ErrorCode;
 use crate::{flattening::ConflictingIndexes, Context, ExpandedDocument, Loader, ProcessingMode};
+use core::hash::Hash;
 use iref::IriBuf;
 use json_ld_core::rdf::RdfDirection;
 use json_ld_core::{ContextLoadError, LoadError};
 use json_ld_core::{Document, RdfQuads, RemoteContextReference};
 use rdf_types::{vocabulary, BlankIdBuf, Generator, Vocabulary, VocabularyMut};
-use std::hash::Hash;
 
 mod remote_document;
 

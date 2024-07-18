@@ -1,4 +1,5 @@
 use crate::{object::InvalidExpandedJson, Direction, LenientLangTag, LenientLangTagBuf};
+use alloc::string::ToString;
 
 /// Language string.
 ///

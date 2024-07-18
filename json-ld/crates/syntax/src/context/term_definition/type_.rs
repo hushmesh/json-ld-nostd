@@ -1,6 +1,6 @@
 use crate::{CompactIri, ExpandableRef, Keyword};
 use iref::Iri;
-use std::hash::Hash;
+use core::hash::Hash;
 
 #[derive(Clone, PartialOrd, Ord, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -60,7 +60,7 @@ impl PartialEq for Type {
 impl Eq for Type {}
 
 impl Hash for Type {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.as_str().hash(state)
 	}
 }
@@ -107,7 +107,7 @@ impl PartialEq for TypeKeyword {
 impl Eq for TypeKeyword {}
 
 impl Hash for TypeKeyword {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.into_str().hash(state)
 	}
 }

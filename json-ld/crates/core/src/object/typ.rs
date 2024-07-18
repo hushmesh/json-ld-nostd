@@ -1,12 +1,13 @@
 use crate::{Id, ValidId};
-use std::fmt;
+use alloc::string::ToString;
+use core::fmt;
 
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Type<T, B> {
 	Json,
 	Id(T),
 	Blank(B),
-	Invalid(String),
+	Invalid(alloc::string::String),
 }
 
 impl<T, B> Type<T, B> {

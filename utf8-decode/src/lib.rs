@@ -1,4 +1,4 @@
-//! This crates provides incremental UTF-8 decoders implementing the [`Iterator`](std::iter::Iterator) trait.
+//! This crates provides incremental UTF-8 decoders implementing the [`Iterator`](core::iter::Iterator) trait.
 //! Thoses iterators are wrappers around [`u8`] bytes iterators.
 //!
 //! ## Decoder
@@ -61,7 +61,7 @@ cfg_if::cfg_if! {
     if #[cfg(feature="std")] {
         extern crate std;
         use std::io::{Result, Error, ErrorKind};
-        use std::convert::TryFrom;
+        use core::convert::TryFrom;
     } else {
         use no_std_io::io::{Result, Error, ErrorKind};
         use core::convert::TryFrom;
@@ -69,23 +69,29 @@ cfg_if::cfg_if! {
 }
 
 mod safe;
-pub use safe::{Decoder, decode};
+pub use safe::{decode, Decoder};
 
 /// Read the next byte of the UTF-8 character out of the given byte iterator.
 /// The byte is returned as a `u32` for later shifting.
 /// Returns an `InvalidData` error if the byte is not part of a valid UTF-8 sequence.
 /// Returns an `UnexpectedEof` error if the input iterator returns `None`.
-fn next_byte<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Result<u32> {
+fn next_byte<I: Iterator<Item = Result<u8>>>(iter: &mut I) -> Result<u32> {
     match iter.next() {
         Some(Ok(c)) => {
             if c & 0xC0 == 0x80 {
                 Ok((c & 0x3F) as u32)
             } else {
-                Err(Error::new(ErrorKind::InvalidData, "invalid UTF-8 sequence."))
+                Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "invalid UTF-8 sequence.",
+                ))
             }
-        },
+        }
         Some(Err(e)) => Err(e),
-        None => Err(Error::new(ErrorKind::UnexpectedEof, "unexpected end of UTF-8 sequence."))
+        None => Err(Error::new(
+            ErrorKind::UnexpectedEof,
+            "unexpected end of UTF-8 sequence.",
+        )),
     }
 }
 
@@ -94,7 +100,7 @@ fn next_byte<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Result<u32> {
 /// Returns an `InvalidData` error the input iterator does not output a valid UTF-8 sequence.
 /// Returns an `UnexpectedEof` error if the input iterator returns `None` before the end of the
 /// UTF-8 character.
-fn raw_decode_from<I: Iterator<Item=Result<u8>>>(a: u32, iter: &mut I) -> Result<u32> {
+fn raw_decode_from<I: Iterator<Item = Result<u8>>>(a: u32, iter: &mut I) -> Result<u32> {
     if a & 0x80 == 0x00 {
         Ok(a)
     } else if a & 0xE0 == 0xC0 {
@@ -110,7 +116,10 @@ fn raw_decode_from<I: Iterator<Item=Result<u8>>>(a: u32, iter: &mut I) -> Result
         let d = next_byte(iter)?;
         Ok((a & 0x07) << 18 | b << 12 | c << 6 | d)
     } else {
-        Err(Error::new(ErrorKind::InvalidData, "invalid UTF-8 sequence."))
+        Err(Error::new(
+            ErrorKind::InvalidData,
+            "invalid UTF-8 sequence.",
+        ))
     }
 }
 
@@ -118,10 +127,13 @@ fn raw_decode_from<I: Iterator<Item=Result<u8>>>(a: u32, iter: &mut I) -> Result
 /// Returns an `InvalidData` error the input iterator does not output a valid UTF-8 sequence.
 /// Returns an `UnexpectedEof` error if the input iterator returns `None` before the end of the
 /// UTF-8 character.
-fn decode_from<I: Iterator<Item=Result<u8>>>(a: u32, iter: &mut I) -> Result<char> {
+fn decode_from<I: Iterator<Item = Result<u8>>>(a: u32, iter: &mut I) -> Result<char> {
     match char::try_from(raw_decode_from(a, iter)?) {
         Ok(c) => Ok(c),
-        Err(_) => Err(Error::new(ErrorKind::InvalidData, "invalid UTF-8 sequence."))
+        Err(_) => Err(Error::new(
+            ErrorKind::InvalidData,
+            "invalid UTF-8 sequence.",
+        )),
     }
 }
 
@@ -132,12 +144,12 @@ fn decode_from<I: Iterator<Item=Result<u8>>>(a: u32, iter: &mut I) -> Result<cha
 /// output a valid UTF-8 sequence.
 /// Returns an [`UnexpectedEof`](std::io::ErrorKind::UnexpectedEof) error if the input iterator
 /// returns `None` before the end of an UTF-8 character.
-pub fn decode_unsafe<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Option<Result<char>> {
-	match iter.next() {
-		Some(Ok(a)) => Some(decode_from(a as u32, iter)),
-		Some(Err(e)) => Some(Err(e)),
-		None => None
-	}
+pub fn decode_unsafe<I: Iterator<Item = Result<u8>>>(iter: &mut I) -> Option<Result<char>> {
+    match iter.next() {
+        Some(Ok(a)) => Some(decode_from(a as u32, iter)),
+        Some(Err(e)) => Some(Err(e)),
+        None => None,
+    }
 }
 
 /// UTF-8 decoder iterator for unsafe input.
@@ -164,24 +176,22 @@ pub fn decode_unsafe<I: Iterator<Item=Result<u8>>>(iter: &mut I) -> Option<Resul
 /// error if the input iterator does not output a valid UTF-8 sequence, or an
 /// [`UnexpectedEof`](std::io::ErrorKind::UnexpectedEof) if the stream ends before the end of a
 /// valid character.
-pub struct UnsafeDecoder<R: Iterator<Item=Result<u8>>> {
-	bytes: R
+pub struct UnsafeDecoder<R: Iterator<Item = Result<u8>>> {
+    bytes: R,
 }
 
-impl<R: Iterator<Item=Result<u8>>> UnsafeDecoder<R> {
+impl<R: Iterator<Item = Result<u8>>> UnsafeDecoder<R> {
     /// Creates a new `Decoder` iterator from the given [`Result<u8>`](std::io::Result) source
     /// iterator.
-	pub fn new(source: R) -> UnsafeDecoder<R> {
-		UnsafeDecoder {
-			bytes: source
-		}
-	}
+    pub fn new(source: R) -> UnsafeDecoder<R> {
+        UnsafeDecoder { bytes: source }
+    }
 }
 
-impl<R: Iterator<Item=Result<u8>>> Iterator for UnsafeDecoder<R> {
-	type Item = Result<char>;
+impl<R: Iterator<Item = Result<u8>>> Iterator for UnsafeDecoder<R> {
+    type Item = Result<char>;
 
-	fn next(&mut self) -> Option<Result<char>> {
-		decode_unsafe(&mut self.bytes)
-	}
+    fn next(&mut self) -> Option<Result<char>> {
+        decode_unsafe(&mut self.bytes)
+    }
 }

@@ -1,3 +1,5 @@
+use alloc::borrow::ToOwned;
+use alloc::string::ToString;
 use linked_data::{
 	xsd_types, CowRdfTerm, LinkedData, LinkedDataGraph, LinkedDataPredicateObjects,
 	LinkedDataResource, LinkedDataSubject, RdfLiteral, RdfLiteralRef, ResourceInterpretation,

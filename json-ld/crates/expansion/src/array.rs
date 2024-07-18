@@ -3,7 +3,7 @@ use json_ld_core::{context::TermDefinitionRef, object, Context, Environment, Obj
 use json_ld_syntax::ContainerKind;
 use json_syntax::Array;
 use rdf_types::VocabularyMut;
-use std::hash::Hash;
+use core::hash::Hash;
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn expand_array<N, L, W>(
