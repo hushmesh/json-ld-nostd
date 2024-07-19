@@ -1,3 +1,6 @@
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::string::ToString;
 use core::hash::Hash;
 
 use super::{DefinedTerms, Environment, Merged};

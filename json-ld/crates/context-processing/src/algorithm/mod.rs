@@ -1,8 +1,10 @@
+use alloc::borrow::ToOwned;
 use core::hash::Hash;
 
 use crate::{
 	Error, Options, Process, Processed, ProcessingResult, ProcessingStack, WarningHandler,
 };
+use alloc::boxed::Box;
 use iref::IriRef;
 use json_ld_core::{Context, Environment, ExtractContext, Loader, ProcessingMode, Term};
 use json_ld_syntax::{self as syntax, Nullable};

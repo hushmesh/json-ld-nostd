@@ -1,5 +1,11 @@
 use super::{expand_iri_simple, expand_iri_with, Environment, Merged};
 use crate::{Error, Options, ProcessingStack, Warning, WarningHandler};
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::string::String;
+use alloc::string::ToString;
+use core::hash::Hash;
+use hashbrown::HashMap;
 use iref::{Iri, IriRef};
 use json_ld_core::{
 	context::{NormalTermDefinition, TypeTermDefinition},
@@ -13,7 +19,6 @@ use json_ld_syntax::{
 	CompactIri, ContainerKind, ExpandableRef, Keyword, LenientLangTag, Nullable,
 };
 use rdf_types::{BlankId, VocabularyMut};
-use std::{collections::HashMap, hash::Hash};
 
 fn is_gen_delim(c: char) -> bool {
 	matches!(c, ':' | '/' | '?' | '#' | '[' | ']' | '@')

@@ -49,7 +49,7 @@ where
 }
 
 /// Either-or error.
-#[derive(Display, Debug)]
+#[derive(Debug)]
 pub struct Error(pub LoadErrorCause, pub LoadErrorCause);
 
 impl fmt::Display for Error {

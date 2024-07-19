@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use alloc::sync::Arc;
 
 /// Single frame of the context processing stack.
 struct StackNode<I> {

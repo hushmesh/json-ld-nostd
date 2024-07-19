@@ -423,7 +423,7 @@ impl<I> Profile<I> {
 pub type LoadErrorCause = Box<dyn std::error::Error + Send + Sync>;
 
 #[cfg(not(feature = "std"))]
-pub(crate) trait Convenient: core::fmt::Display + core::fmt::Debug + Send + Sync {}
+pub trait Convenient: core::fmt::Display + core::fmt::Debug + Send + Sync {}
 
 #[cfg(not(feature = "std"))]
 pub type LoadErrorCause = Box<dyn Convenient>;

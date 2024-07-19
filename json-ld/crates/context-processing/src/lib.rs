@@ -1,10 +1,18 @@
 //! JSON-LD context processing types and algorithms.
+
+#![cfg_attr(not(feature = "std"), no_std)]
+
+extern crate alloc;
+
+extern crate thiserror_nostd_notrait as thiserror;
+
 use algorithm::{Action, RejectVocab};
+use alloc::string::String;
+use core::{fmt, hash::Hash};
 pub use json_ld_core::{warning, Context, ProcessingMode};
 use json_ld_core::{ExtractContextError, LoadError, Loader};
 use json_ld_syntax::ErrorCode;
 use rdf_types::VocabularyMut;
-use std::{fmt, hash::Hash};
 
 pub mod algorithm;
 mod processed;

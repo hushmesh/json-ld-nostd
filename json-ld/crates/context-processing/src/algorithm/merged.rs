@@ -1,3 +1,4 @@
+use alloc::borrow::ToOwned;
 use iref::IriRef;
 use json_ld_syntax as syntax;
 use syntax::Nullable;

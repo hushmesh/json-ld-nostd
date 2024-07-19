@@ -1,7 +1,7 @@
+use core::ops;
 use iref::IriBuf;
 use json_ld_core::Context;
 use rdf_types::BlankIdBuf;
-use std::ops;
 
 /// Processed context that also borrows the original, unprocessed, context.
 pub struct Processed<'l, T = IriBuf, B = BlankIdBuf> {

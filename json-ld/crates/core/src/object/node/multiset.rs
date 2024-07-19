@@ -1,14 +1,15 @@
 use alloc::vec::Vec;
 use core::hash::{BuildHasher, Hash, Hasher};
+use hashbrown::hash_map::DefaultHashBuilder;
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct DeterministicHasherBuilder;
 
 impl BuildHasher for DeterministicHasherBuilder {
-	type Hasher = hashbrown::hash_map::DefaultHashBuilder;
+	type Hasher = ahash::AHasher;
 
 	fn build_hasher(&self) -> Self::Hasher {
-		Self::Hasher::new()
+		DefaultHashBuilder::default().build_hasher()
 	}
 }
 
