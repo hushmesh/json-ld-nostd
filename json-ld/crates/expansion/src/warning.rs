@@ -1,8 +1,9 @@
+use alloc::string::String;
 use contextual::DisplayWithContext;
+use core::fmt;
 use json_ld_context_processing::algorithm::MalformedIri;
 use langtag::InvalidLangTag;
 use rdf_types::vocabulary::BlankIdVocabulary;
-use core::fmt;
 
 #[derive(Debug)]
 pub enum Warning<B> {

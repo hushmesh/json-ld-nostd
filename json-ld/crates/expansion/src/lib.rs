@@ -5,10 +5,13 @@
 //!
 //! The expansion algorithm is provided by the [`Expand`] trait.
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
 extern crate alloc;
 
 extern crate thiserror_nostd_notrait as thiserror;
 
+use alloc::boxed::Box;
 use core::future::Future;
 use core::hash::Hash;
 use core::pin::Pin;

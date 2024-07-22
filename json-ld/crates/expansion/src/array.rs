@@ -1,4 +1,6 @@
 use crate::{expand_element, ActiveProperty, Error, Expanded, Loader, Options};
+use alloc::boxed::Box;
+use alloc::vec::Vec;
 use async_recursion::async_recursion;
 use core::hash::Hash;
 use json_ld_core::{context::TermDefinitionRef, object, Context, Environment, Object};

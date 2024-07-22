@@ -2,6 +2,10 @@ use crate::{
 	expand_element, expand_iri, expand_literal, filter_top_level_item, Action, ActiveProperty,
 	Error, Expanded, ExpandedEntry, LiteralValue, Options,
 };
+use alloc::borrow::ToOwned;
+use alloc::boxed::Box;
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use async_recursion::async_recursion;
 use contextual::WithContext;
 use core::hash::Hash;

@@ -1,3 +1,4 @@
+use alloc::string::String;
 use json_ld_context_processing::algorithm::RejectVocab;
 use json_ld_syntax::ErrorCode;
 

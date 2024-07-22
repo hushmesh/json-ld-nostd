@@ -2,14 +2,18 @@ use crate::{
 	expand_array, expand_iri, expand_literal, expand_node, expand_value, Error, Expanded,
 	GivenLiteralValue, LiteralValue, Loader, Options,
 };
+use alloc::borrow::Cow;
+use alloc::boxed::Box;
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use async_recursion::async_recursion;
+use core::hash::Hash;
 use json_ld_context_processing::{Options as ProcessingOptions, Process};
 use json_ld_core::{object, Context, Environment, Indexed, Object, Term};
 use json_ld_syntax::{Keyword, Nullable};
 use json_syntax::{object::Entry, Value};
 use mown::Mown;
 use rdf_types::VocabularyMut;
-use std::{borrow::Cow, hash::Hash};
 
 pub(crate) struct ExpandedEntry<'a, T, B>(pub &'a str, pub Term<T, B>, pub &'a Value);
 

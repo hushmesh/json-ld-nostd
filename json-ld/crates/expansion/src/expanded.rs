@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use json_ld_core::IndexedObject;
 
 pub enum Expanded<T, B> {

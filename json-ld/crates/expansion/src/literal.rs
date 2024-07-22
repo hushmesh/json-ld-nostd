@@ -1,4 +1,5 @@
 use crate::{expand_iri, node_id_of_term, ActiveProperty};
+use alloc::borrow::ToOwned;
 use json_ld_context_processing::algorithm::{Action, RejectVocab};
 use json_ld_core::{
 	object::value::Literal, Context, Environment, IndexedObject, LangString, Node, Object, Type,

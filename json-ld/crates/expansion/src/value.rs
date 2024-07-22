@@ -1,4 +1,7 @@
 use crate::{expand_iri, Action, ExpandedEntry};
+use alloc::borrow::ToOwned;
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use json_ld_context_processing::algorithm::RejectVocab;
 use json_ld_core::{
 	object::value::Literal, Context, Environment, Id, Indexed, IndexedObject, LangString, Object,

@@ -1,5 +1,6 @@
 use super::expand_element;
 use crate::{ActiveProperty, Error, Loader, Options};
+use alloc::boxed::Box;
 use core::future::Future;
 use core::hash::Hash;
 use core::pin::Pin;
