@@ -2,7 +2,9 @@ use crate::{
 	expand_element, expand_iri, expand_literal, filter_top_level_item, Action, ActiveProperty,
 	Error, Expanded, ExpandedEntry, LiteralValue, Options, Warning, WarningHandler,
 };
+use async_recursion::async_recursion;
 use contextual::WithContext;
+use core::hash::Hash;
 use indexmap::IndexSet;
 use json_ld_context_processing::{Options as ProcessingOptions, Process};
 use json_ld_core::{
@@ -13,7 +15,6 @@ use json_ld_syntax::{ContainerKind, Keyword, LenientLangTagBuf, Nullable};
 use json_syntax::object::Entry;
 use mown::Mown;
 use rdf_types::VocabularyMut;
-use core::hash::Hash;
 
 /// Convert a term to a node id, if possible.
 /// Return `None` if the term is `null`.
@@ -27,13 +28,13 @@ pub(crate) fn node_id_of_term<T, B>(term: Term<T, B>) -> Option<Id<T, B>> {
 
 /// Expand a node object.
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn expand_node<'a, N, L, W>(
-	env: Environment<'a, N, L, W>,
+pub(crate) async fn expand_node<'a, N, L>(
+	env: Environment<'a, N, L>,
 	active_context: &'a Context<N::Iri, N::BlankId>,
 	type_scoped_context: &'a Context<N::Iri, N::BlankId>,
 	active_property: ActiveProperty<'a>,
 	expanded_entries: Vec<ExpandedEntry<'a, N::Iri, N::BlankId>>,
-	base_url: Option<&'a N::Iri>,
+	base_url: Option<N::Iri>,
 	options: Options,
 ) -> Result<Option<Indexed<Node<N::Iri, N::BlankId>>>, Error>
 where
@@ -41,7 +42,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + Eq + Hash,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	// Initialize two empty maps, `result` and `nests`.
 	// let mut result = Indexed::new(Node::new(), None);
@@ -103,15 +103,16 @@ type ExpandedNode<T, B> = (Indexed<Node<T, B>>, bool);
 type NodeEntriesExpensionResult<T, B> = Result<ExpandedNode<T, B>, Error>;
 
 #[allow(clippy::too_many_arguments)]
-async fn expand_node_entries<'a, N, L, W>(
-	mut env: Environment<'a, N, L, W>,
+#[async_recursion(?Send)]
+async fn expand_node_entries<'a, N, L>(
+	mut env: Environment<'a, N, L>,
 	mut result: Indexed<Node<N::Iri, N::BlankId>>,
 	mut has_value_object_entries: bool,
 	active_context: &'a Context<N::Iri, N::BlankId>,
 	type_scoped_context: &'a Context<N::Iri, N::BlankId>,
 	active_property: ActiveProperty<'a>,
 	expanded_entries: Vec<ExpandedEntry<'a, N::Iri, N::BlankId>>,
-	base_url: Option<&'a N::Iri>,
+	base_url: Option<N::Iri>,
 	options: Options,
 ) -> NodeEntriesExpensionResult<N::Iri, N::BlankId>
 where
@@ -119,7 +120,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + Eq + Hash,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	// For each `key` and `value` in `element`, ordered lexicographically by key
 	// if `ordered` is `true`:
@@ -226,12 +226,11 @@ where
 							Environment {
 								vocabulary: env.vocabulary,
 								loader: env.loader,
-								warnings: env.warnings,
 							},
 							active_context,
 							ActiveProperty::Some("@graph"),
 							value,
-							base_url,
+							base_url.clone(),
 							options,
 							false,
 						))
@@ -260,12 +259,11 @@ where
 							Environment {
 								vocabulary: env.vocabulary,
 								loader: env.loader,
-								warnings: env.warnings,
 							},
 							active_context,
 							ActiveProperty::Some("@included"),
 							value,
-							base_url,
+							base_url.clone(),
 							options,
 							false,
 						))
@@ -348,12 +346,11 @@ where
 											Environment {
 												vocabulary: env.vocabulary,
 												loader: env.loader,
-												warnings: env.warnings,
 											},
 											active_context,
 											ActiveProperty::Some(reverse_key.as_ref()),
 											reverse_value,
-											base_url,
+											base_url.clone(),
 											options,
 											false,
 										))
@@ -490,7 +487,6 @@ where
 										Environment {
 											vocabulary: env.vocabulary,
 											loader: env.loader,
-											warnings: env.warnings,
 										},
 										result,
 										has_value_object_entries,
@@ -498,7 +494,7 @@ where
 										type_scoped_context,
 										active_property,
 										nested_expanded_entries,
-										base_url,
+										base_url.clone(),
 										options,
 									))
 									.await?;
@@ -608,16 +604,6 @@ where
 											} else {
 												let (language, error) =
 													LenientLangTagBuf::new(language.to_string());
-
-												if let Some(error) = error {
-													env.warnings.handle(
-														env.vocabulary,
-														Warning::MalformedLanguageTag(
-															language.to_string().clone(),
-															error,
-														),
-													)
-												}
 
 												Some(language)
 											};
@@ -772,12 +758,11 @@ where
 									Environment {
 										vocabulary: env.vocabulary,
 										loader: env.loader,
-										warnings: env.warnings,
 									},
 									map_context.as_ref(),
 									ActiveProperty::Some(key),
 									index_value,
-									base_url,
+									base_url.clone(),
 									options,
 									true,
 								))
@@ -815,7 +800,6 @@ where
 												Environment {
 													vocabulary: env.vocabulary,
 													loader: env.loader,
-													warnings: env.warnings,
 												},
 												options.policy.vocab,
 												active_context,
@@ -911,12 +895,11 @@ where
 								Environment {
 									vocabulary: env.vocabulary,
 									loader: env.loader,
-									warnings: env.warnings,
 								},
 								active_context,
 								ActiveProperty::Some(key),
 								value,
-								base_url,
+								base_url.clone(),
 								options,
 								false,
 							))

@@ -1,9 +1,10 @@
 use super::{expand_iri_simple, expand_iri_with, Environment, Merged};
-use crate::{Error, Options, ProcessingStack, Warning, WarningHandler};
+use crate::{Error, Options, ProcessingStack};
 use alloc::borrow::ToOwned;
 use alloc::boxed::Box;
 use alloc::string::String;
 use alloc::string::ToString;
+use async_recursion::async_recursion;
 use core::hash::Hash;
 use hashbrown::HashMap;
 use iref::{Iri, IriRef};
@@ -89,8 +90,9 @@ pub struct DefinedTerm {
 /// Follows the `https://www.w3.org/TR/json-ld11-api/#create-term-definition` algorithm.
 /// Default value for `base_url` is `None`. Default values for `protected` and `override_protected` are `false`.
 #[allow(clippy::too_many_arguments)]
-pub async fn define<'a, N, L, W>(
-	mut env: Environment<'a, N, L, W>,
+#[async_recursion(?Send)]
+pub async fn define<'a, N, L>(
+	mut env: Environment<'a, N, L>,
 	active_context: &'a mut Context<N::Iri, N::BlankId>,
 	local_context: &'a Merged<'a>,
 	term: KeyOrKeywordRef<'a>,
@@ -105,7 +107,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + PartialEq,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	let term = term.to_owned();
 	if defined.begin(&term)? {
@@ -209,7 +210,6 @@ where
 							Environment {
 								vocabulary: env.vocabulary,
 								loader: env.loader,
-								warnings: env.warnings,
 							},
 							active_context,
 							type_.cast(),
@@ -253,10 +253,6 @@ where
 						// If the value associated with the @reverse entry is a string having
 						// the form of a keyword, return; processors SHOULD generate a warning.
 						if reverse_value.is_keyword_like() {
-							env.warnings.handle(
-								env.vocabulary,
-								Warning::KeywordLikeValue(reverse_value.to_string()),
-							);
 							return Ok(());
 						}
 
@@ -336,10 +332,6 @@ where
 									// processors SHOULD generate a warning.
 									if id_value.is_keyword_like() && !id_value.is_keyword() {
 										debug_assert!(Keyword::try_from(id_value.as_str()).is_err());
-										env.warnings.handle(
-											env.vocabulary,
-											Warning::KeywordLikeValue(id_value.to_string()),
-										);
 										return Ok(());
 									}
 
@@ -350,7 +342,6 @@ where
 										Environment {
 											vocabulary: env.vocabulary,
 											loader: env.loader,
-											warnings: env.warnings,
 										},
 										active_context,
 										Nullable::Some(id_value.into()),
@@ -396,7 +387,6 @@ where
 											Environment {
 												vocabulary: env.vocabulary,
 												loader: env.loader,
-												warnings: env.warnings,
 											},
 											active_context,
 											Nullable::Some((&term).into()),
@@ -447,7 +437,6 @@ where
 										Environment {
 											vocabulary: env.vocabulary,
 											loader: env.loader,
-											warnings: env.warnings,
 										},
 										active_context,
 										local_context,

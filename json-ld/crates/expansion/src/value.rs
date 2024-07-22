@@ -58,8 +58,8 @@ impl From<RejectVocab> for InvalidValue {
 pub type ValueExpansionResult<T, B> = Result<Option<IndexedObject<T, B>>, InvalidValue>;
 
 /// Expand a value object.
-pub(crate) fn expand_value<N, L, W>(
-	env: &mut Environment<N, L, W>,
+pub(crate) fn expand_value<N, L>(
+	env: &mut Environment<N, L>,
 	vocab_policy: Action,
 	input_type: Option<Term<N::Iri, N::BlankId>>,
 	type_scoped_context: &Context<N::Iri, N::BlankId>,
@@ -70,7 +70,6 @@ where
 	N: VocabularyMut,
 	N::Iri: Clone + PartialEq,
 	N::BlankId: Clone + PartialEq,
-	W: WarningHandler<N>,
 {
 	let mut is_json = input_type
 		.as_ref()
@@ -208,13 +207,6 @@ where
 			let lang = match language {
 				Some(language) => {
 					let (language, error) = LenientLangTagBuf::new(language);
-
-					if let Some(error) = error {
-						env.warnings.handle(
-							env.vocabulary,
-							Warning::MalformedLanguageTag(language.to_string(), error),
-						)
-					}
 
 					Some(language)
 				}

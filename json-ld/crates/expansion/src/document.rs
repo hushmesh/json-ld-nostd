@@ -1,20 +1,20 @@
 use super::expand_element;
 use crate::{ActiveProperty, Error, Loader, Options, WarningHandler};
+use core::hash::Hash;
 use json_ld_core::{Context, Environment, ExpandedDocument, IndexedObject, Object};
 use json_syntax::Value;
 use rdf_types::VocabularyMut;
-use core::hash::Hash;
 
 /// Expand the given JSON-LD document.
 ///
 /// Note that you probably do not want to use this function directly,
 /// but instead use the [`Document::expand`](crate::Document::expand) method on
 /// a `Value` instance.
-pub(crate) async fn expand<'a, N, L, W>(
-	env: Environment<'a, N, L, W>,
+pub(crate) async fn expand<'a, N, L>(
+	env: Environment<'a, N, L>,
 	document: &'a Value,
 	active_context: Context<N::Iri, N::BlankId>,
-	base_url: Option<&'a N::Iri>,
+	base_url: Option<N::Iri>,
 	options: Options,
 ) -> Result<ExpandedDocument<N::Iri, N::BlankId>, Error>
 where
@@ -22,7 +22,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + Eq + Hash,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	let expanded = expand_element(
 		env,

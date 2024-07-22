@@ -26,3 +26,4 @@ contextual.workspace = true
 hashbrown.workspace = true
 thiserror-nostd-notrait.workspace = true
 owning_ref = "0.4.1"
+async-recursion = "1.1.1"

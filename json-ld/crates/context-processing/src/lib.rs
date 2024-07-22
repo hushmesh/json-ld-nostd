@@ -7,7 +7,10 @@ extern crate alloc;
 extern crate thiserror_nostd_notrait as thiserror;
 
 use algorithm::{Action, RejectVocab};
+use alloc::boxed::Box;
 use alloc::string::String;
+use core::future::Future;
+use core::pin::Pin;
 use core::{fmt, hash::Hash};
 pub use json_ld_core::{warning, Context, ProcessingMode};
 use json_ld_core::{ExtractContextError, LoadError, Loader};
@@ -158,60 +161,49 @@ pub type ProcessingResult<'a, T, B> = Result<Processed<'a, T, B>, Error>;
 
 pub trait Process {
 	/// Process the local context with specific options.
-	#[allow(async_fn_in_trait)]
-	async fn process_full<N, L, W>(
-		&self,
-		vocabulary: &mut N,
-		active_context: &Context<N::Iri, N::BlankId>,
-		loader: &L,
+	fn process_full<'a, N, L>(
+		&'a self,
+		vocabulary: &'a mut N,
+		active_context: &'a Context<N::Iri, N::BlankId>,
+		loader: &'a L,
 		base_url: Option<N::Iri>,
 		options: Options,
-		warnings: W,
-	) -> Result<Processed<N::Iri, N::BlankId>, Error>
+	) -> Pin<Box<dyn Future<Output = Result<Processed<'a, N::Iri, N::BlankId>, Error>> + 'a>>
 	where
 		N: VocabularyMut,
 		N::Iri: Clone + Eq + Hash,
 		N::BlankId: Clone + PartialEq,
-		L: Loader,
-		W: WarningHandler<N>;
+		L: Loader;
 
 	/// Process the local context with specific options.
 	#[allow(clippy::type_complexity)]
-	#[allow(async_fn_in_trait)]
-	async fn process_with<N, L>(
-		&self,
-		vocabulary: &mut N,
-		active_context: &Context<N::Iri, N::BlankId>,
-		loader: &L,
+	fn process_with<'a, N, L>(
+		&'a self,
+		vocabulary: &'a mut N,
+		active_context: &'a Context<N::Iri, N::BlankId>,
+		loader: &'a L,
 		base_url: Option<N::Iri>,
 		options: Options,
-	) -> Result<Processed<N::Iri, N::BlankId>, Error>
+	) -> Pin<Box<dyn Future<Output = Result<Processed<'a, N::Iri, N::BlankId>, Error>> + 'a>>
 	where
 		N: VocabularyMut,
 		N::Iri: Clone + Eq + Hash,
 		N::BlankId: Clone + PartialEq,
 		L: Loader,
 	{
-		self.process_full(
-			vocabulary,
-			active_context,
-			loader,
-			base_url,
-			options,
-			warning::Print,
-		)
-		.await
+		self.process_full(vocabulary, active_context, loader, base_url, options)
 	}
 
+	/*
 	/// Process the local context with the given initial active context with the default options:
 	/// `is_remote` is `false`, `override_protected` is `false` and `propagate` is `true`.
 	#[allow(async_fn_in_trait)]
-	async fn process<N, L>(
-		&self,
-		vocabulary: &mut N,
-		loader: &L,
+	fn process<'a, N, L>(
+		&'a self,
+		vocabulary: &'a mut N,
+		loader: &'a L,
 		base_url: Option<N::Iri>,
-	) -> Result<Processed<N::Iri, N::BlankId>, Error>
+	) -> Pin<Box<dyn Future<Output = Result<Processed<'a, N::Iri, N::BlankId>, Error>> + 'a>>
 	where
 		N: VocabularyMut,
 		N::Iri: Clone + Eq + Hash,
@@ -225,10 +217,9 @@ pub trait Process {
 			loader,
 			base_url,
 			Options::default(),
-			warning::Print,
 		)
-		.await
 	}
+	*/
 }
 
 /// Options of the Context Processing Algorithm.

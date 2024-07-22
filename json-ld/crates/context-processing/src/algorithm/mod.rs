@@ -1,10 +1,11 @@
 use alloc::borrow::ToOwned;
 use core::hash::Hash;
 
-use crate::{
-	Error, Options, Process, Processed, ProcessingResult, ProcessingStack, WarningHandler,
-};
+use crate::{Error, Options, Process, Processed, ProcessingResult, ProcessingStack};
 use alloc::boxed::Box;
+use async_recursion::async_recursion;
+use core::future::Future;
+use core::pin::Pin;
 use iref::IriRef;
 use json_ld_core::{Context, Environment, ExtractContext, Loader, ProcessingMode, Term};
 use json_ld_syntax::{self as syntax, Nullable};
@@ -20,35 +21,28 @@ pub use merged::*;
 use syntax::context::definition::KeyOrKeywordRef;
 
 impl Process for syntax::context::Context {
-	async fn process_full<N, L, W>(
-		&self,
-		vocabulary: &mut N,
-		active_context: &Context<N::Iri, N::BlankId>,
-		loader: &L,
+	fn process_full<'a, N, L>(
+		&'a self,
+		vocabulary: &'a mut N,
+		active_context: &'a Context<N::Iri, N::BlankId>,
+		loader: &'a L,
 		base_url: Option<N::Iri>,
 		options: Options,
-		mut warnings: W,
-	) -> Result<Processed<N::Iri, N::BlankId>, Error>
+	) -> Pin<Box<dyn Future<Output = Result<Processed<'a, N::Iri, N::BlankId>, Error>> + 'a>>
 	where
 		N: VocabularyMut,
 		N::Iri: Clone + Eq + Hash,
 		N::BlankId: Clone + PartialEq,
 		L: Loader,
-		W: WarningHandler<N>,
 	{
-		process_context(
-			Environment {
-				vocabulary,
-				loader,
-				warnings: &mut warnings,
-			},
+		Box::pin(process_context(
+			Environment { vocabulary, loader },
 			active_context,
 			self,
 			ProcessingStack::default(),
 			base_url,
 			options,
-		)
-		.await
+		))
 	}
 }
 
@@ -72,8 +66,9 @@ fn resolve_iri<I>(
 //
 // The recommended default value for `remote_contexts` is the empty set,
 // `false` for `override_protected`, and `true` for `propagate`.
-async fn process_context<'l: 'a, 'a, N, L, W>(
-	mut env: Environment<'a, N, L, W>,
+#[async_recursion(?Send)]
+async fn process_context<'l: 'a, 'a, N, L>(
+	mut env: Environment<'a, N, L>,
 	active_context: &'a Context<N::Iri, N::BlankId>,
 	local_context: &'l syntax::context::Context,
 	mut remote_contexts: ProcessingStack<N::Iri>,
@@ -85,7 +80,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + PartialEq,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	// 1) Initialize result to the result of cloning active context.
 	let mut result = active_context.clone();
@@ -190,7 +184,6 @@ where
 						Environment {
 							vocabulary: env.vocabulary,
 							loader: env.loader,
-							warnings: env.warnings,
 						},
 						&result,
 						&loaded_context,
@@ -376,7 +369,6 @@ where
 						Environment {
 							vocabulary: env.vocabulary,
 							loader: env.loader,
-							warnings: env.warnings,
 						},
 						&mut result,
 						&context,
@@ -395,7 +387,6 @@ where
 						Environment {
 							vocabulary: env.vocabulary,
 							loader: env.loader,
-							warnings: env.warnings,
 						},
 						&mut result,
 						&context,

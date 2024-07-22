@@ -2,6 +2,7 @@ use crate::{
 	expand_array, expand_iri, expand_literal, expand_node, expand_value, Error, Expanded,
 	GivenLiteralValue, LiteralValue, Loader, Options, Warning, WarningHandler,
 };
+use async_recursion::async_recursion;
 use json_ld_context_processing::{Options as ProcessingOptions, Process};
 use json_ld_core::{object, Context, Environment, Id, Indexed, Object, Term, ValidId};
 use json_ld_syntax::{Keyword, Nullable};
@@ -69,12 +70,13 @@ pub(crate) type ElementExpansionResult<T, B> = Result<Expanded<T, B>, Error>;
 /// See <https://www.w3.org/TR/json-ld11-api/#expansion-algorithm>.
 /// The default specified value for `ordered` and `from_map` is `false`.
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn expand_element<'a, N, L, W>(
-	mut env: Environment<'a, N, L, W>,
+#[async_recursion(?Send)]
+pub(crate) async fn expand_element<'a, N, L>(
+	mut env: Environment<'a, N, L>,
 	active_context: &'a Context<N::Iri, N::BlankId>,
 	active_property: ActiveProperty<'a>,
 	element: &'a Value,
-	base_url: Option<&'a N::Iri>,
+	base_url: Option<N::Iri>,
 	options: Options,
 	from_map: bool,
 ) -> ElementExpansionResult<N::Iri, N::BlankId>
@@ -83,7 +85,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + Eq + Hash,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	// If `element` is null, return null.
 	if element.is_null() {
@@ -183,7 +184,7 @@ where
 						)
 						.await?
 						.into_processed(), // .err_at(|| active_property.as_ref().map(Meta::metadata).cloned().unwrap_or_default())?
-					                   // .into_inner(),
+					                    // .into_inner(),
 				);
 			}
 
@@ -204,7 +205,7 @@ where
 							env.vocabulary,
 							active_context.as_ref(),
 							env.loader,
-							base_url.cloned(),
+							base_url.clone(),
 							options.into(),
 						)
 						.await?
@@ -318,10 +319,6 @@ where
 			let mut set_entry = None;
 			let mut value_entry = None;
 			for Entry { key, value } in entries.iter() {
-				if key.is_empty() {
-					env.warnings.handle(env.vocabulary, Warning::EmptyTerm);
-				}
-
 				let expanded_key = expand_iri(
 					&mut env,
 					active_context.as_ref(),
@@ -339,10 +336,6 @@ where
 							}
 						}
 						Term::Keyword(Keyword::Set) => set_entry = Some(value.clone()),
-						Term::Id(Id::Valid(ValidId::Blank(id))) => {
-							env.warnings
-								.handle(env.vocabulary, Warning::BlankNodeIdProperty(id.clone()));
-						}
 						_ => (),
 					}
 
@@ -375,12 +368,11 @@ where
 						Environment {
 							vocabulary: env.vocabulary,
 							loader: env.loader,
-							warnings: env.warnings,
 						},
 						active_context.as_ref(),
 						active_property,
 						item,
-						base_url,
+						base_url.clone(),
 						options,
 						false,
 					))

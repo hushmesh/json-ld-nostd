@@ -1,18 +1,20 @@
 use crate::{expand_element, ActiveProperty, Error, Expanded, Loader, Options, WarningHandler};
+use async_recursion::async_recursion;
+use core::hash::Hash;
 use json_ld_core::{context::TermDefinitionRef, object, Context, Environment, Object};
 use json_ld_syntax::ContainerKind;
 use json_syntax::Array;
 use rdf_types::VocabularyMut;
-use core::hash::Hash;
 
 #[allow(clippy::too_many_arguments)]
-pub(crate) async fn expand_array<N, L, W>(
-	env: Environment<'_, N, L, W>,
+#[async_recursion(?Send)]
+pub(crate) async fn expand_array<'a, N, L>(
+	env: Environment<'a, N, L>,
 	active_context: &Context<N::Iri, N::BlankId>,
-	active_property: ActiveProperty<'_>,
-	active_property_definition: Option<TermDefinitionRef<'_, N::Iri, N::BlankId>>,
-	element: &Array,
-	base_url: Option<&N::Iri>,
+	active_property: ActiveProperty<'a>,
+	active_property_definition: Option<TermDefinitionRef<'a, N::Iri, N::BlankId>>,
+	element: &'a Array,
+	base_url: Option<N::Iri>,
 	options: Options,
 	from_map: bool,
 ) -> Result<Expanded<N::Iri, N::BlankId>, Error>
@@ -21,7 +23,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + Eq + Hash,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	// Initialize an empty array, result.
 	let mut is_list = false;
@@ -43,12 +44,11 @@ where
 			Environment {
 				vocabulary: env.vocabulary,
 				loader: env.loader,
-				warnings: env.warnings,
 			},
 			active_context,
 			active_property,
 			item,
-			base_url,
+			base_url.clone(),
 			options,
 			from_map,
 		))

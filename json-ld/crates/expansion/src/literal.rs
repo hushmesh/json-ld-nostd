@@ -87,8 +87,8 @@ pub(crate) type LiteralExpansionResult<T, B> = Result<ExpandedLiteral<T, B>, Lit
 
 /// Expand a literal value.
 /// See <https://www.w3.org/TR/json-ld11-api/#value-expansion>.
-pub(crate) fn expand_literal<N, L, W>(
-	mut env: Environment<N, L, W>,
+pub(crate) fn expand_literal<N, L>(
+	mut env: Environment<N, L>,
 	vocab_policy: Action,
 	active_context: &Context<N::Iri, N::BlankId>,
 	active_property: ActiveProperty<'_>,
@@ -98,7 +98,6 @@ where
 	N: VocabularyMut,
 	N::Iri: Clone,
 	N::BlankId: Clone,
-	W: WarningHandler<N>,
 {
 	let active_property_definition = active_property.get_from(active_context);
 	let active_property_type = if let Some(active_property_definition) = active_property_definition

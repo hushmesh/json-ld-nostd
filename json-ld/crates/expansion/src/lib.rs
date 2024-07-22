@@ -4,7 +4,14 @@
 //! # Usage
 //!
 //! The expansion algorithm is provided by the [`Expand`] trait.
+
+extern crate alloc;
+
+extern crate thiserror_nostd_notrait as thiserror;
+
+use core::future::Future;
 use core::hash::Hash;
+use core::pin::Pin;
 
 use json_ld_context_processing::Context;
 use json_ld_core::{Environment, ExpandedDocument, Loader, RemoteDocument};
@@ -114,22 +121,19 @@ pub trait Expand<Iri> {
 	/// imported by the input and required during expansion.
 	/// The `options` are used to tweak the expansion algorithm.
 	/// The `warning_handler` is called each time a warning is emitted during expansion.
-	#[allow(async_fn_in_trait)]
-	async fn expand_full<N, L, W>(
+	fn expand_full<'a, N, L>(
 		&self,
-		vocabulary: &mut N,
+		vocabulary: &'a mut N,
 		context: Context<Iri, N::BlankId>,
-		base_url: Option<&N::Iri>,
-		loader: &L,
+		base_url: Option<N::Iri>,
+		loader: &'a L,
 		options: Options,
-		warnings_handler: W,
-	) -> ExpansionResult<N::Iri, N::BlankId>
+	) -> Pin<Box<dyn Future<Output = ExpansionResult<N::Iri, N::BlankId>> + 'a>>
 	where
 		N: VocabularyMut<Iri = Iri>,
 		Iri: Clone + Eq + Hash,
 		N::BlankId: Clone + Eq + Hash,
-		L: Loader,
-		W: WarningHandler<N>;
+		L: Loader;
 
 	/// Expand the input JSON-LD document with the given `vocabulary`
 	/// to interpret identifiers.
@@ -138,12 +142,11 @@ pub trait Expand<Iri> {
 	/// imported by the input and required during expansion.
 	/// The expansion algorithm is called with an empty initial context with
 	/// a base URL given by [`Expand::default_base_url`].
-	#[allow(async_fn_in_trait)]
-	async fn expand_with<'a, N, L>(
+	fn expand_with<'a, N, L>(
 		&'a self,
 		vocabulary: &'a mut N,
 		loader: &'a L,
-	) -> ExpansionResult<Iri, N::BlankId>
+	) -> Pin<Box<dyn Future<Output = ExpansionResult<Iri, N::BlankId>> + 'a>>
 	where
 		N: VocabularyMut<Iri = Iri>,
 		Iri: 'a + Clone + Eq + Hash,
@@ -153,12 +156,10 @@ pub trait Expand<Iri> {
 		self.expand_full(
 			vocabulary,
 			Context::<N::Iri, N::BlankId>::new(self.default_base_url().cloned()),
-			self.default_base_url(),
+			self.default_base_url().cloned(),
 			loader,
 			Options::default(),
-			(),
 		)
-		.await
 	}
 
 	/// Expand the input JSON-LD document.
@@ -167,15 +168,16 @@ pub trait Expand<Iri> {
 	/// imported by the input and required during expansion.
 	/// The expansion algorithm is called with an empty initial context with
 	/// a base URL given by [`Expand::default_base_url`].
-	#[allow(async_fn_in_trait)]
-	async fn expand<'a, L>(&'a self, loader: &'a L) -> ExpansionResult<Iri, BlankIdBuf>
+	fn expand<'a, L>(
+		&'a self,
+		loader: &'a L,
+	) -> Pin<Box<dyn Future<Output = ExpansionResult<Iri, BlankIdBuf>> + 'a>>
 	where
 		(): VocabularyMut<Iri = Iri>,
 		Iri: 'a + Clone + Eq + Hash,
 		L: Loader,
 	{
 		self.expand_with(vocabulary::no_vocabulary_mut(), loader)
-			.await
 	}
 }
 
@@ -185,34 +187,30 @@ impl<Iri> Expand<Iri> for Value {
 		None
 	}
 
-	async fn expand_full<N, L, W>(
+	fn expand_full<'a, N, L>(
 		&self,
-		vocabulary: &mut N,
+		vocabulary: &'a mut N,
 		context: Context<Iri, N::BlankId>,
-		base_url: Option<&Iri>,
-		loader: &L,
+		base_url: Option<N::Iri>,
+		loader: &'a L,
 		options: Options,
-		mut warnings_handler: W,
-	) -> ExpansionResult<Iri, N::BlankId>
+	) -> Pin<Box<dyn Future<Output = ExpansionResult<N::Iri, N::BlankId>> + 'a>>
 	where
 		N: VocabularyMut<Iri = Iri>,
 		Iri: Clone + Eq + Hash,
 		N::BlankId: Clone + Eq + Hash,
 		L: Loader,
-		W: WarningHandler<N>,
 	{
-		document::expand(
-			Environment {
-				vocabulary,
-				loader,
-				warnings: &mut warnings_handler,
-			},
-			self,
-			context,
-			base_url,
-			options,
-		)
-		.await
+		Box::pin(async move {
+			document::expand(
+				Environment { vocabulary, loader },
+				self,
+				context,
+				base_url,
+				options,
+			)
+			.await
+		})
 	}
 }
 
@@ -225,31 +223,24 @@ impl<Iri> Expand<Iri> for RemoteDocument<Iri> {
 		self.url()
 	}
 
-	async fn expand_full<N, L, W>(
+	fn expand_full<'a, N, L>(
 		&self,
-		vocabulary: &mut N,
+		vocabulary: &'a mut N,
 		context: Context<Iri, N::BlankId>,
-		base_url: Option<&Iri>,
-		loader: &L,
+		base_url: Option<N::Iri>,
+		loader: &'a L,
 		options: Options,
-		warnings_handler: W,
-	) -> ExpansionResult<Iri, N::BlankId>
+	) -> Pin<Box<dyn Future<Output = ExpansionResult<N::Iri, N::BlankId>> + 'a>>
 	where
 		N: VocabularyMut<Iri = Iri>,
 		Iri: Clone + Eq + Hash,
 		N::BlankId: Clone + Eq + Hash,
 		L: Loader,
-		W: WarningHandler<N>,
 	{
-		self.document()
-			.expand_full(
-				vocabulary,
-				context,
-				base_url,
-				loader,
-				options,
-				warnings_handler,
-			)
-			.await
+		Box::pin(async move {
+			self.document()
+				.expand_full(vocabulary, context, base_url, loader, options)
+				.await
+		})
 	}
 }

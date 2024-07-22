@@ -4,10 +4,10 @@ use alloc::string::ToString;
 use core::hash::Hash;
 
 use super::{DefinedTerms, Environment, Merged};
-use crate::{Error, Options, ProcessingStack, Warning, WarningHandler};
+use crate::{Error, Options, ProcessingStack, Warning};
 use contextual::WithContext;
 use iref::{Iri, IriRef};
-use json_ld_core::{warning, Context, Id, Loader, Term};
+use json_ld_core::{Context, Id, Loader, Term};
 use json_ld_syntax::{self as syntax, context::definition::Key, ExpandableRef, Nullable};
 use rdf_types::{
 	vocabulary::{BlankIdVocabulary, IriVocabulary},
@@ -28,8 +28,8 @@ pub type ExpandIriResult<T, B> = Result<Option<Term<T, B>>, Error>;
 
 /// Default values for `document_relative` and `vocab` should be `false` and `true`.
 #[allow(clippy::too_many_arguments)]
-pub async fn expand_iri_with<'a, N, L, W>(
-	mut env: Environment<'a, N, L, W>,
+pub async fn expand_iri_with<'a, N, L>(
+	mut env: Environment<'a, N, L>,
 	active_context: &'a mut Context<N::Iri, N::BlankId>,
 	value: Nullable<ExpandableRef<'a>>,
 	document_relative: bool,
@@ -44,7 +44,6 @@ where
 	N::Iri: Clone + Eq + Hash,
 	N::BlankId: Clone + PartialEq,
 	L: Loader,
-	W: WarningHandler<N>,
 {
 	match value {
 		Nullable::Null => Ok(Some(Term::Null)),
@@ -63,7 +62,6 @@ where
 				Environment {
 					vocabulary: env.vocabulary,
 					loader: env.loader,
-					warnings: env.warnings,
 				},
 				active_context,
 				local_context,
@@ -116,7 +114,6 @@ where
 						Environment {
 							vocabulary: env.vocabulary,
 							loader: env.loader,
-							warnings: env.warnings,
 						},
 						active_context,
 						local_context,
@@ -198,15 +195,10 @@ where
 	}
 }
 
-fn invalid_iri<N, L, W: json_ld_core::warning::Handler<N, Warning>>(
-	env: &mut Environment<N, L, W>,
-	value: String,
-) -> Term<N::Iri, N::BlankId>
+fn invalid_iri<N, L>(_env: &mut Environment<N, L>, value: String) -> Term<N::Iri, N::BlankId>
 where
 	N: Vocabulary,
 {
-	env.warnings
-		.handle(env.vocabulary, MalformedIri(value.clone()).into());
 	Term::Id(Id::Invalid(value))
 }
 
@@ -231,8 +223,8 @@ pub type IriExpansionResult<N> =
 	Result<Option<Term<<N as IriVocabulary>::Iri, <N as BlankIdVocabulary>::BlankId>>, RejectVocab>;
 
 /// Default values for `document_relative` and `vocab` should be `false` and `true`.
-pub fn expand_iri_simple<W, N, L, H>(
-	env: &mut Environment<N, L, H>,
+pub fn expand_iri_simple<N, L>(
+	env: &mut Environment<N, L>,
 	active_context: &Context<N::Iri, N::BlankId>,
 	value: Nullable<ExpandableRef>,
 	document_relative: bool,
@@ -242,8 +234,6 @@ where
 	N: VocabularyMut,
 	N::Iri: Clone,
 	N::BlankId: Clone,
-	W: From<MalformedIri>,
-	H: warning::Handler<N, W>,
 {
 	match value {
 		Nullable::Null => Ok(Some(Term::Null)),
@@ -353,16 +343,9 @@ where
 	}
 }
 
-fn invalid_iri_simple<W, N, L, H>(
-	env: &mut Environment<N, L, H>,
-	value: String,
-) -> Term<N::Iri, N::BlankId>
+fn invalid_iri_simple<N, L>(_env: &mut Environment<N, L>, value: String) -> Term<N::Iri, N::BlankId>
 where
 	N: Vocabulary,
-	W: From<MalformedIri>,
-	H: warning::Handler<N, W>,
 {
-	env.warnings
-		.handle(env.vocabulary, MalformedIri(value.clone()).into());
 	Term::Id(Id::Invalid(value))
 }
