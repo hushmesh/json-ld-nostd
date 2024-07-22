@@ -110,7 +110,7 @@ pub trait Expand<Iri> {
 	/// Returns the default base URL passed to the expansion algorithm
 	/// and used to initialize the default empty context when calling
 	/// [`Expand::expand`] or [`Expand::expand_with`].
-	fn default_base_url(&self) -> Option<&Iri>;
+	fn default_base_url(&self) -> Option<Iri>;
 
 	/// Expand the document with full options.
 	///
@@ -122,7 +122,7 @@ pub trait Expand<Iri> {
 	/// The `options` are used to tweak the expansion algorithm.
 	/// The `warning_handler` is called each time a warning is emitted during expansion.
 	fn expand_full<'a, N, L>(
-		&self,
+		&'a self,
 		vocabulary: &'a mut N,
 		context: Context<Iri, N::BlankId>,
 		base_url: Option<N::Iri>,
@@ -155,8 +155,8 @@ pub trait Expand<Iri> {
 	{
 		self.expand_full(
 			vocabulary,
-			Context::<N::Iri, N::BlankId>::new(self.default_base_url().cloned()),
-			self.default_base_url().cloned(),
+			Context::<N::Iri, N::BlankId>::new(self.default_base_url().clone()),
+			self.default_base_url().clone(),
 			loader,
 			Options::default(),
 		)
@@ -183,12 +183,12 @@ pub trait Expand<Iri> {
 
 /// Value expansion without base URL.
 impl<Iri> Expand<Iri> for Value {
-	fn default_base_url(&self) -> Option<&Iri> {
+	fn default_base_url(&self) -> Option<Iri> {
 		None
 	}
 
 	fn expand_full<'a, N, L>(
-		&self,
+		&'a self,
 		vocabulary: &'a mut N,
 		context: Context<Iri, N::BlankId>,
 		base_url: Option<N::Iri>,
@@ -201,16 +201,13 @@ impl<Iri> Expand<Iri> for Value {
 		N::BlankId: Clone + Eq + Hash,
 		L: Loader,
 	{
-		Box::pin(async move {
-			document::expand(
-				Environment { vocabulary, loader },
-				self,
-				context,
-				base_url,
-				options,
-			)
-			.await
-		})
+		document::expand(
+			Environment { vocabulary, loader },
+			self,
+			context,
+			base_url,
+			options,
+		)
 	}
 }
 
@@ -218,13 +215,13 @@ impl<Iri> Expand<Iri> for Value {
 ///
 /// The default base URL given to the expansion algorithm is the URL of
 /// the remote document.
-impl<Iri> Expand<Iri> for RemoteDocument<Iri> {
-	fn default_base_url(&self) -> Option<&Iri> {
-		self.url()
+impl<Iri: Clone> Expand<Iri> for RemoteDocument<Iri> {
+	fn default_base_url(&self) -> Option<Iri> {
+		self.url().cloned()
 	}
 
 	fn expand_full<'a, N, L>(
-		&self,
+		&'a self,
 		vocabulary: &'a mut N,
 		context: Context<Iri, N::BlankId>,
 		base_url: Option<N::Iri>,
@@ -237,10 +234,7 @@ impl<Iri> Expand<Iri> for RemoteDocument<Iri> {
 		N::BlankId: Clone + Eq + Hash,
 		L: Loader,
 	{
-		Box::pin(async move {
-			self.document()
-				.expand_full(vocabulary, context, base_url, loader, options)
-				.await
-		})
+		self.document()
+			.expand_full(vocabulary, context, base_url, loader, options)
 	}
 }

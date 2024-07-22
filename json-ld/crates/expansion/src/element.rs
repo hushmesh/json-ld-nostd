@@ -1,10 +1,10 @@
 use crate::{
 	expand_array, expand_iri, expand_literal, expand_node, expand_value, Error, Expanded,
-	GivenLiteralValue, LiteralValue, Loader, Options, Warning, WarningHandler,
+	GivenLiteralValue, LiteralValue, Loader, Options,
 };
 use async_recursion::async_recursion;
 use json_ld_context_processing::{Options as ProcessingOptions, Process};
-use json_ld_core::{object, Context, Environment, Id, Indexed, Object, Term, ValidId};
+use json_ld_core::{object, Context, Environment, Indexed, Object, Term};
 use json_ld_syntax::{Keyword, Nullable};
 use json_syntax::{object::Entry, Value};
 use mown::Mown;

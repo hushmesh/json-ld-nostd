@@ -1,4 +1,6 @@
-use contextual::{DisplayWithContext, WithContext};
+use contextual::DisplayWithContext;
+#[cfg(feature = "std")]
+use contextual::WithContext;
 
 /// Warning handler.
 ///
@@ -27,7 +29,11 @@ pub struct Print;
 impl<N, W: core::fmt::Display> Handler<N, W> for Print {
 	fn handle(&mut self, _vocabulary: &N, warning: W) {
 		#[cfg(feature = "std")]
-		eprintln!("{warning}")
+		eprintln!("{warning}");
+		#[cfg(not(feature = "std"))]
+		{
+			let _ = warning;
+		}
 	}
 }
 
@@ -37,6 +43,11 @@ pub struct PrintWith;
 impl<N, W: DisplayWithContext<N>> Handler<N, W> for PrintWith {
 	fn handle(&mut self, vocabulary: &N, warning: W) {
 		#[cfg(feature = "std")]
-		eprintln!("{}", warning.with(vocabulary))
+		eprintln!("{}", warning.with(vocabulary));
+		#[cfg(not(feature = "std"))]
+		{
+			let _ = warning;
+			let _ = vocabulary;
+		}
 	}
 }

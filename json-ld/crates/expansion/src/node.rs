@@ -1,6 +1,6 @@
 use crate::{
 	expand_element, expand_iri, expand_literal, filter_top_level_item, Action, ActiveProperty,
-	Error, Expanded, ExpandedEntry, LiteralValue, Options, Warning, WarningHandler,
+	Error, Expanded, ExpandedEntry, LiteralValue, Options,
 };
 use async_recursion::async_recursion;
 use contextual::WithContext;
@@ -602,7 +602,7 @@ where
 											)) {
 												None
 											} else {
-												let (language, error) =
+												let (language, _error) =
 													LenientLangTagBuf::new(language.to_string());
 
 												Some(language)

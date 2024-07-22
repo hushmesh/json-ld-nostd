@@ -1,4 +1,4 @@
-use crate::{expand_iri, Action, ExpandedEntry, Warning, WarningHandler};
+use crate::{expand_iri, Action, ExpandedEntry};
 use json_ld_context_processing::algorithm::RejectVocab;
 use json_ld_core::{
 	object::value::Literal, Context, Environment, Id, Indexed, IndexedObject, LangString, Object,
@@ -206,7 +206,7 @@ where
 		if let Literal::String(s) = result {
 			let lang = match language {
 				Some(language) => {
-					let (language, error) = LenientLangTagBuf::new(language);
+					let (language, _error) = LenientLangTagBuf::new(language);
 
 					Some(language)
 				}
