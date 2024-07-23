@@ -302,14 +302,18 @@
 //!
 //! [`contextual::DisplayWithContext`]: https://docs.rs/contextual/latest/contextual/trait.DisplayWithContext.html
 //! [`contextual::WithContext`]: https://docs.rs/contextual/latest/contextual/trait.WithContext.html
-pub use json_ld_compaction as compaction;
+
+#![cfg_attr(not(feature = "std"), no_std)]
+
+extern crate alloc;
+
+extern crate thiserror_nostd_notrait as thiserror;
+
 pub use json_ld_context_processing as context_processing;
 pub use json_ld_core::*;
 pub use json_ld_expansion as expansion;
-pub use json_ld_serialization as ser;
 pub use json_ld_syntax as syntax;
 
-pub use compaction::Compact;
 pub use context_processing::Process;
 pub use expansion::Expand;
 
