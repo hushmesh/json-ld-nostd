@@ -1,0 +1,21 @@
+[package]
+name = "btree-range-map"
+version = "0.7.2"
+authors = ["Timothée Haudebourg <author@haudebourg.net>"]
+edition = "2021"
+
+categories = ["data-structures"]
+keywords = ["btree", "range", "map", "set"]
+description = "B-tree range map implementation"
+repository = "https://github.com/timothee-haudebourg/btree-range-map"
+documentation = "https://docs.rs/btree-range-map"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+
+[dependencies]
+cc-traits = "2.0.0"
+btree-slab = "0.6"
+slab = "0.4.5"
+range-traits = "0.3.0"
+ordered-float = { version = "3.0.0", optional = true }
+serde = { version = "1.0", optional = true, default-features = false }
