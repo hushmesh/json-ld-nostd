@@ -34,7 +34,7 @@ smallvec = "1.9"
 smallstr = "0.3"
 locspan = "0.8.2"
 locspan-derive = "0.6"
-indexmap = "1.9.1"
+indexmap = "1.9"
 decoded-char = "0.1"
 hashbrown = { version = "0.12.1", features = [ "raw" ] }
 contextual = { version = "0.1.1", optional = true }

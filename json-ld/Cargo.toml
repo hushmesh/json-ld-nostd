@@ -19,7 +19,6 @@ std = [
 	"json-ld-context-processing/std",
 	"json-ld-expansion/std",
 	"iref/std",
-	"static-iref/std",
 	"rdf-types/std",
 	]
 reqwest = ["json-ld-core/reqwest"]
@@ -37,14 +36,6 @@ iref.workspace = true
 rdf-types.workspace = true
 contextual.workspace = true
 thiserror-nostd-notrait.workspace = true
-
-[dev-dependencies]
-log.workspace = true
-async-std = { workspace = true, features = ["attributes"] }
-iref.workspace = true
-static-iref.workspace = true
-nquads-syntax = "0.19"
-stacker = "0.1.15"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -87,7 +78,7 @@ smallvec = "1.10"
 log = "0.4.17"
 thiserror-nostd-notrait = { version = "1.0", default-features = false }
 serde = "1.0"
-indexmap = "2.0"
+indexmap = "1.9"
 
 iref-enum = "3.0"
 async-std = "1.12"
