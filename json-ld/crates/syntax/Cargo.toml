@@ -23,6 +23,7 @@ rdf-types.workspace = true
 json-syntax.workspace = true
 locspan.workspace = true
 hashbrown.workspace = true
+ahash = { version = "=0.7.7", default-features = false }
 educe.workspace = true
 smallvec.workspace = true
 contextual.workspace = true

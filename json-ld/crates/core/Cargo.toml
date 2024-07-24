@@ -31,6 +31,7 @@ futures.workspace = true
 langtag.workspace = true
 smallvec.workspace = true
 hashbrown.workspace = true
+ahash = { version = "=0.7.7", default-features = false }
 thiserror-nostd-notrait.workspace = true
 indexmap.workspace = true
 serde = { workspace = true, optional = true }
@@ -39,7 +40,6 @@ ryu-js = "0.2.2"
 permutohedron = { version = "0.2" }
 pretty_dtoa = "0.3"
 mime = "0.3"
-ahash = { version = "0.7.8", default-features = false }
 
 # For the reqwest loader
 reqwest = { version = "0.12", optional = true }

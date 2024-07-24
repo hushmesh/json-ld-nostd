@@ -24,6 +24,7 @@ futures.workspace = true
 mown.workspace = true
 contextual.workspace = true
 hashbrown.workspace = true
+ahash = { version = "=0.7.7", default-features = false }
 thiserror-nostd-notrait.workspace = true
 owning_ref = "0.4.1"
 async-recursion = "1.1.1"
