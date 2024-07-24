@@ -58,7 +58,7 @@ edition = "2021"
 version = "0.21.1"
 
 [workspace.dependencies]
-json-ld = { path = ".", version = "0.21.1" }
+json-ld = { path = ".", version = "0.21.1", default-features = false }
 json-ld-syntax = { path = "crates/syntax", default-features = false, version = "0.21.1" }
 json-ld-core = { path = "crates/core", default-features = false, version = "0.21.1" }
 json-ld-context-processing = { path = "crates/context-processing", default-features = false, version = "0.21.1" }
