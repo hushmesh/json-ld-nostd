@@ -77,7 +77,7 @@ hashbrown = "0.12.1"
 smallvec = "1.10"
 log = "0.4.17"
 thiserror-nostd-notrait = { version = "1.0", default-features = false }
-serde = "1.0"
+serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
 indexmap = "1.9"
 
 iref-enum = "3.0"

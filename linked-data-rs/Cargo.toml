@@ -31,7 +31,7 @@ im = "15.1.0"
 iref.workspace = true
 thiserror-nostd-notrait.workspace = true
 linked-data-derive = { workspace = true, optional = true }
-serde = { version = "1.0", features = ["derive"], optional = true }
+serde = { version = "1.0", optional = true, default-features = false, features = ["alloc", "derive"] }
 
 [dev-dependencies]
 json-syntax = { path = "../json-syntax", features = ["serde"] }
