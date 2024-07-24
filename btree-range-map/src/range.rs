@@ -359,7 +359,7 @@ mod tests {
 	use crate::RangeSet;
 
 	use super::*;
-	use std::cmp::Ordering;
+	use core::cmp::Ordering;
 
 	macro_rules! make_bound {
 		([= $v:literal ..]) => {

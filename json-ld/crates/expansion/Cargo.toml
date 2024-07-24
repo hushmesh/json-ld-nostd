@@ -13,7 +13,7 @@ readme = "README.md"
 
 [features]
 default = ["std"]
-std = ["json-ld-core/std", "json-ld-syntax/std", "json-ld-context-processing/std", "json-syntax/std", "iref/std", "rdf-types/std"]
+std = ["json-ld-core/std", "json-ld-syntax/std", "json-ld-context-processing/std", "json-syntax/std", "iref/std", "rdf-types/std", "langtag/std"]
 
 [dependencies]
 json-ld-core.workspace = true

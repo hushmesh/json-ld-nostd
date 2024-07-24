@@ -13,7 +13,7 @@ readme = "README.md"
 
 [features]
 default = ["std"]
-std = ["json-ld-syntax/std", "json-syntax/std", "rdf-types/std", "iref/std", "static-iref/std", "linked-data/std"]
+std = ["json-ld-syntax/std", "json-syntax/std", "rdf-types/std", "iref/std", "static-iref/std", "linked-data/std", "langtag/std"]
 reqwest = ["bytes", "dep:reqwest", "utf8-decode", "reqwest-middleware"]
 serde = ["dep:serde", "json-syntax/serde"]
 

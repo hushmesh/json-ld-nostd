@@ -66,7 +66,7 @@ json-ld-expansion = { path = "crates/expansion", default-features = false, versi
 json-syntax = { path = "../json-syntax", default-features = false }
 iref = { path = "../iref", default-features = false }
 static-iref = { path = "../static-iref", default-features = false }
-langtag = "0.4"
+langtag = { path = "../langtag", default-features = false }
 rdf-types = { path = "../rdf-types", default-features = false }
 contextual = "0.1.4"
 locspan = "0.8"

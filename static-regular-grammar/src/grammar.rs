@@ -75,8 +75,11 @@ pub enum FileError {
 	#[error(transparent)]
 	Var(#[from] std::env::VarError),
 
-	#[error(transparent)]
-	Serialization(#[from] serde_cbor::Error),
+	#[error("serialization")]
+	Serialization(),
+
+	#[error("deserialization")]
+	Deserialization(),
 }
 
 #[derive(Deserialize)]
@@ -112,7 +115,11 @@ impl<T: Token> Grammar<T> {
 		match std::fs::File::open(filename) {
 			Ok(file) => {
 				let input = std::io::BufReader::new(file);
-				let cached: CachedAutomaton<T> = serde_cbor::from_reader(input)?;
+				let cached: Result<CachedAutomaton<T>, _> = ciborium::from_reader(input);
+				if cached.is_err() {
+					return Err(FileError::Deserialization());
+				}
+				let cached = cached.unwrap();
 
 				if cached.hash == *hash {
 					Ok(Some(Self::Cached(cached.automaton)))
@@ -136,10 +143,11 @@ impl<T: Token> Grammar<T> {
 
 		let file = std::fs::File::create(filename)?;
 		let output = std::io::BufWriter::new(file);
-		Ok(serde_cbor::to_writer(
-			output,
-			&CachedAutomatonRef::<T>::new(hash, automaton),
-		)?)
+		let result = ciborium::into_writer(&CachedAutomatonRef::<T>::new(hash, automaton), output);
+		if result.is_err() {
+			return Err(FileError::Serialization());
+		}
+		Ok(())
 	}
 
 	pub fn is_cached(&self) -> bool {
