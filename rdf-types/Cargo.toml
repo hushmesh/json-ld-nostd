@@ -33,7 +33,7 @@ uuid = { version = "0.8", optional = true }
 # Minor dependencies.
 indexmap = "1.9"
 educe = "0.5.11"
-slab = "0.4.9"
+slab = "0.4.8"
 replace_with = "0.1.7"
 raw-btree = "0.2.0"
 
