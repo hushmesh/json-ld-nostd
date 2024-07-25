@@ -83,4 +83,4 @@ indexmap = "1.9"
 iref-enum = "3.0"
 async-std = "1.12"
 
-linked-data = { path = "../linked-data-rs", default-features = false }
+linked-data = { path = "../linked-data", default-features = false }
