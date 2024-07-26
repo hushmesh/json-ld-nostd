@@ -1,0 +1,38 @@
+[package]
+name = "ssi"
+version = "0.8.0"
+authors = ["Spruce Systems, Inc."]
+edition = "2021"
+license = "Apache-2.0"
+description = "Core library for Verifiable Credentials and Decentralized Identifiers."
+repository = "https://github.com/spruceid/ssi/"
+documentation = "https://docs.rs/ssi/"
+keywords = ["ssi", "did", "vc", "vp", "jsonld"]
+
+[workspace]
+members = [
+  "crates/rdf",
+]
+
+[features]
+default = ["std"]
+std = [ "ssi-rdf/std" ]
+
+[workspace.dependencies]
+ssi-rdf = { path = "./crates/rdf", version = "0.1", default-features = false }
+ssi-crypto = { path = "./crates/crypto", version = "0.1", default-features = false }
+
+iref = { path = "../iref", default-features = false }
+rdf-types = { path = "../rdf-types", default-features = false }
+xsd-types = { path = "../xsd-types", default-features = false }
+linked-data = { path = "../linked-data", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
+indexmap = { version = "1.9", default-features = false }
+combination = "0.1"
+locspan = "0.8"
+nquads-syntax = "0.19"
+sha2 = { version = "0.10.0", default-features = false }
+
+[dependencies]
+ssi-rdf.workspace = true
+xsd-types.workspace = true

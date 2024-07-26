@@ -1,0 +1,16 @@
+[package]
+name = "ssi-crypto"
+version = "0.1.0"
+edition = "2021"
+authors = ["Spruce Systems, Inc."]
+license = "Apache-2.0"
+description = "Implementation of various hashes and signatures for the ssi library."
+repository = "https://github.com/spruceid/ssi/"
+documentation = "https://docs.rs/ssi-crypto/"
+
+[features]
+default = ["std"]
+std = []
+
+[dependencies]
+sha2 = { workspace = true }

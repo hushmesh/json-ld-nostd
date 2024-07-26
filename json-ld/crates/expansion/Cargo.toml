@@ -32,5 +32,4 @@ indexmap.workspace = true
 async-recursion = "1.1.1"
 
 [dev-dependencies]
-async-std = { workspace = true, features = ["attributes"] }
 static-iref.workspace = true

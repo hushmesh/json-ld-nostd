@@ -30,5 +30,5 @@ abnf = "0.13.0"
 indoc = "2.0.1"
 serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
 ciborium = { path = "../ciborium/ciborium" }
-sha2 = "0.10.7"
+sha2 = { version = "0.10.7", default-features = false }
 hex_fmt = "0.3.0"

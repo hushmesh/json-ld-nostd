@@ -78,9 +78,5 @@ smallvec = "1.10"
 log = "0.4.17"
 thiserror-nostd-notrait = { version = "1.0", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
-indexmap = "1.9"
-
-iref-enum = "3.0"
-async-std = "1.12"
-
+indexmap = { version = "1.9", default-features = false }
 linked-data = { path = "../linked-data", default-features = false }
