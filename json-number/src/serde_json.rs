@@ -1,4 +1,5 @@
 use crate::{Buffer, Number, NumberBuf};
+use alloc::string::ToString;
 
 impl<B: Buffer> From<serde_json::Number> for NumberBuf<B> {
 	#[inline(always)]
