@@ -1,7 +1,7 @@
-use chrono::{Datelike, FixedOffset, Timelike, Utc};
 use alloc::borrow::ToOwned;
 use alloc::string::String;
 use alloc::string::ToString;
+use chrono::{Datelike, FixedOffset, Timelike, Utc};
 use core::{cmp::Ordering, fmt, hash::Hash, str::FromStr};
 
 use crate::{
@@ -31,12 +31,14 @@ impl DateTimeStamp {
 
 	/// Returns a `DateTimeStamp` which corresponds to the current time and
 	/// date.
+	#[cfg(feature = "std")]
 	pub fn now() -> Self {
 		Utc::now().into()
 	}
 
 	/// Returns a `DateTimeStamp` which corresponds to the current time and
 	/// date, with millisecond precision (at most).
+	#[cfg(feature = "std")]
 	pub fn now_ms() -> Self {
 		let now = Utc::now();
 		let ms = now.timestamp_subsec_millis();
