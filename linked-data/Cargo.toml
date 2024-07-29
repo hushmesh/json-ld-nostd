@@ -26,7 +26,7 @@ rdf-types = { path = "../rdf-types", default-features = false }
 xsd-types = { path = "../xsd-types", default-features = false }
 static-iref = { path = "../static-iref", default-features = false }
 json-syntax = { path = "../json-syntax", default-features = false, features = ["canonicalize"] }
-educe = { version = "0.5.11", default-features = false, features = ["Default", "Clone", "Debug", "Copy"] }
+educe = "0.4.22"
 im = "15.1.0"
 iref.workspace = true
 thiserror-nostd-notrait.workspace = true

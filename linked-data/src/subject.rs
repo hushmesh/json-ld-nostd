@@ -178,7 +178,7 @@ pub trait LinkedDataDeserializeSubject<I: Interpretation = (), V: Vocabulary = (
 		dataset: &D,
 		graph: Option<&I::Resource>,
 		resource: &I::Resource,
-		context: &Context<I>,
+		context: Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		D: PatternMatchingDataset<Resource = I::Resource>;
@@ -199,7 +199,7 @@ pub trait LinkedDataDeserializeSubject<I: Interpretation = (), V: Vocabulary = (
 			dataset,
 			graph,
 			resource,
-			&Context::default(),
+			Context::default(),
 		)
 	}
 }
@@ -214,7 +214,7 @@ where
 		_dataset: &D,
 		_graph: Option<&I::Resource>,
 		resource: &I::Resource,
-		context: &Context<I>,
+		context: Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		D: PatternMatchingDataset<Resource = I::Resource>,
@@ -242,7 +242,7 @@ where
 		_dataset: &D,
 		_graph: Option<&I::Resource>,
 		resource: &I::Resource,
-		context: &Context<I>,
+		context: Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		D: PatternMatchingDataset<Resource = I::Resource>,
@@ -273,7 +273,7 @@ where
 		_dataset: &D,
 		_graph: Option<&I::Resource>,
 		resource: &I::Resource,
-		context: &Context<I>,
+		context: Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		D: PatternMatchingDataset<Resource = I::Resource>,
@@ -304,7 +304,7 @@ impl<I: Interpretation, V: Vocabulary, T: LinkedDataDeserializeSubject<I, V>>
 		dataset: &D,
 		graph: Option<&I::Resource>,
 		resource: &I::Resource,
-		context: &Context<I>,
+		context: Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		D: PatternMatchingDataset<Resource = I::Resource>,

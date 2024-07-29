@@ -32,7 +32,7 @@ uuid = { version = "0.8", optional = true }
 
 # Minor dependencies.
 indexmap = { version = "1.9", default-features = false }
-educe = { version = "0.5.11", default-features = false, features = ["Default", "Clone", "Debug", "Copy"] }
+educe = "0.5.11"
 slab = "0.4.8"
 replace_with = "0.1.7"
 raw-btree = "0.2.0"

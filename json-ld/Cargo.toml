@@ -70,7 +70,7 @@ langtag = { path = "../langtag", default-features = false }
 rdf-types = { path = "../rdf-types", default-features = false }
 contextual = "0.1.4"
 locspan = "0.8"
-educe = { version = "0.5.11", default-features = false, features = ["Default", "Clone", "Debug", "Copy"] }
+educe = "0.4.23"
 futures = "0.3"
 mown = "0.2.2"
 hashbrown = "0.12.1"

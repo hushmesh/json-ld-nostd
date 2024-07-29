@@ -33,7 +33,7 @@ pub fn generate(
 				dataset_: &D_,
 				graph_: Option<&I_::Resource>,
 				resource_: &I_::Resource,
-				context_: &::linked_data::Context<I_>
+				context_: ::linked_data::Context<I_>
 			) -> Result<Self, ::linked_data::FromLinkedDataError>
 			where
 				D_: ::linked_data::rdf_types::dataset::PatternMatchingDataset<Resource = I_::Resource>

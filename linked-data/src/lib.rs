@@ -54,7 +54,6 @@ extern crate thiserror_nostd_notrait as thiserror;
 use alloc::borrow::ToOwned;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
-use core::fmt::Debug;
 use educe::Educe;
 use iref::{Iri, IriBuf};
 #[cfg(feature = "derive")]
@@ -265,7 +264,7 @@ pub enum ResourceOrIriRef<'a, I: Interpretation> {
 }
 
 impl<'a, I: Interpretation> ResourceOrIriRef<'a, I> {
-	pub fn into_iri<V>(&self, vocabulary: &V, interpretation: &I) -> Option<IriBuf>
+	pub fn into_iri<V>(self, vocabulary: &V, interpretation: &I) -> Option<IriBuf>
 	where
 		V: IriVocabulary,
 		I: ReverseIriInterpretation<Iri = V::Iri>,
@@ -275,14 +274,14 @@ impl<'a, I: Interpretation> ResourceOrIriRef<'a, I> {
 				.iris_of(r)
 				.next()
 				.map(|i| vocabulary.iri(i).unwrap().to_owned()),
-			Self::Iri(i) => Some((*i).to_owned()),
+			Self::Iri(i) => Some(i.to_owned()),
 			Self::Anonymous => None,
 		}
 	}
 }
 
 #[derive(Educe)]
-#[educe(Debug(bound = "I::Resource: Debug"), Clone, Copy)]
+#[educe(Debug(bound = "I::Resource: core::fmt::Debug"), Clone, Copy)]
 pub enum Context<'a, I: Interpretation> {
 	Subject,
 	Predicate {
@@ -331,7 +330,7 @@ impl<'a, I: Interpretation> Context<'a, I> {
 		}
 	}
 
-	pub fn into_iris<V>(&self, vocabulary: &V, interpretation: &I) -> ContextIris
+	pub fn into_iris<V>(self, vocabulary: &V, interpretation: &I) -> ContextIris
 	where
 		V: IriVocabulary,
 		I: ReverseIriInterpretation<Iri = V::Iri>,
