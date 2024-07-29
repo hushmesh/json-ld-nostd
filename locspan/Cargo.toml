@@ -1,0 +1,22 @@
+[package]
+name = "locspan"
+authors = ["Timothée Haudebourg <author@haudebourg.net>"]
+version = "0.8.2"
+edition = "2021"
+description = "Code mapping utility types and traits."
+categories = ["parsing"]
+keywords = ["source", "code", "map", "span"]
+repository = "https://github.com/timothee-haudebourg/locspan"
+documentation = "https://docs.rs/locspan"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+
+[features]
+default = ["std"]
+std = []
+reporting = ["codespan-reporting"]
+
+[dependencies]
+codespan-reporting = { version = "0.11", optional = true }
+contextual = { version = "0.1.3", optional = true }
+serde = { version = "1.0", optional = true }

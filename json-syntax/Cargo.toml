@@ -32,7 +32,7 @@ all-features = true
 json-number = { path = "../json-number", default-features = false, features = [ "smallnumberbuf" ] }
 smallvec = "1.9"
 smallstr = "0.3"
-locspan = "0.8.2"
+locspan = { path = "../locspan", default-features = false }
 locspan-derive = "0.6"
 indexmap = { version = "1.9", default-features = false }
 decoded-char = "0.1"

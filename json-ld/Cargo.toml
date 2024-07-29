@@ -69,7 +69,7 @@ static-iref = { path = "../static-iref", default-features = false }
 langtag = { path = "../langtag", default-features = false }
 rdf-types = { path = "../rdf-types", default-features = false }
 contextual = "0.1.4"
-locspan = "0.8"
+locspan = { path = "../locspan", default-features = false }
 educe = { path = "../educe" }
 futures = "0.3"
 mown = "0.2.2"

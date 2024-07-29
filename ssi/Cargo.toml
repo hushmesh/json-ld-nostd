@@ -29,7 +29,7 @@ linked-data = { path = "../linked-data", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
 indexmap = { version = "1.9", default-features = false }
 combination = "0.1"
-locspan = "0.8"
+locspan = { path = "../locspan", default-features = false }
 nquads-syntax = "0.19"
 sha2 = { version = "0.10.0", default-features = false }
 
