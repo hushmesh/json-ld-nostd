@@ -11,7 +11,6 @@ use core::borrow::Borrow;
 use core::hash::Hash;
 use iref::IriBuf;
 use json_ld_syntax::{KeywordType, Nullable};
-use once_cell::sync::OnceCell;
 use rdf_types::{BlankIdBuf, Id, Vocabulary};
 
 pub use json_ld_syntax::context::{
@@ -37,7 +36,7 @@ pub struct Context<T = IriBuf, B = BlankIdBuf> {
 	default_base_direction: Option<Direction>,
 	previous_context: Option<Box<Self>>,
 	definitions: Definitions<T, B>,
-	inverse: OnceCell<InverseContext<T, B>>,
+	inverse: Option<InverseContext<T, B>>,
 }
 
 impl<T, B> Default for Context<T, B> {
@@ -50,7 +49,7 @@ impl<T, B> Default for Context<T, B> {
 			default_base_direction: None,
 			previous_context: None,
 			definitions: Definitions::default(),
-			inverse: OnceCell::default(),
+			inverse: Option::None,
 		}
 	}
 }
@@ -71,7 +70,7 @@ impl<T, B> Context<T, B> {
 			default_base_direction: None,
 			previous_context: None,
 			definitions: Definitions::default(),
-			inverse: OnceCell::default(),
+			inverse: Option::None,
 		}
 	}
 
@@ -174,6 +173,7 @@ impl<T, B> Context<T, B> {
 	}
 
 	/// Returns the inverse of this context.
+	/*
 	pub fn inverse(&self) -> &InverseContext<T, B>
 	where
 		T: Clone + Hash + Eq,
@@ -181,6 +181,7 @@ impl<T, B> Context<T, B> {
 	{
 		self.inverse.get_or_init(|| self.into())
 	}
+	*/
 
 	/// Sets the normal definition for the given term `key`.
 	pub fn set_normal(
@@ -280,7 +281,7 @@ impl<T, B> Context<T, B> {
 				.previous_context
 				.map(|c| Box::new((*c).map_ids_with(map_iri, map_id))),
 			definitions: self.definitions.map_ids(map_iri, map_id),
-			inverse: OnceCell::new(),
+			inverse: Option::None,
 		}
 	}
 }
@@ -323,7 +324,7 @@ impl<T: Clone, B: Clone> Clone for Context<T, B> {
 			default_base_direction: self.default_base_direction,
 			previous_context: self.previous_context.clone(),
 			definitions: self.definitions.clone(),
-			inverse: OnceCell::default(),
+			inverse: Option::None,
 		}
 	}
 }
