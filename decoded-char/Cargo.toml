@@ -1,0 +1,16 @@
+[package]
+name = "decoded-char"
+version = "0.1.1"
+edition = "2021"
+authors = ["Timothée Haudebourg <author@haudebourg.net>"]
+categories = ["data-structures"]
+keywords = ["char", "byte", "size", "length"]
+description = "Simple wrapper to keep track of the original byte length of a decoded character in the encoded source file."
+repository = "https://github.com/timothee-haudebourg/decoded-char"
+documentation = "https://docs.rs/decoded-char"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+
+[features]
+default = ["std"]
+std = []

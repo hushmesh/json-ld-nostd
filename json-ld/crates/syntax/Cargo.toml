@@ -30,4 +30,4 @@ contextual.workspace = true
 thiserror-nostd-notrait.workspace = true
 serde = { workspace = true, features = ["derive"], optional = true }
 indexmap.workspace = true
-decoded-char = "0.1.0"
+decoded-char = { path = "../../../decoded-char", default-features = false }
