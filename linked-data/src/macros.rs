@@ -39,7 +39,7 @@ macro_rules! json_literal {
 				dataset: &D,
 				graph: Option<&I::Resource>,
 				objects: impl IntoIterator<Item = &'a I::Resource>,
-				context: $crate::Context<I>
+				context: &$crate::Context<I>
 			) -> Result<Self, $crate::FromLinkedDataError>
 			where
 				I::Resource: 'a,
@@ -85,7 +85,7 @@ macro_rules! json_literal {
 				_dataset: &D,
 				_graph: Option<&I::Resource>,
 				resource: &I::Resource,
-				context: $crate::Context<I>
+				context: &$crate::Context<I>
 			) -> Result<Self, $crate::FromLinkedDataError>
 			where
 				D: $crate::rdf_types::dataset::PatternMatchingDataset<Resource = I::Resource>

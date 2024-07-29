@@ -114,6 +114,7 @@ impl<'a, V: Vocabulary> CowRdfTerm<'a, V> {
 		}
 	}
 
+	/*
 	pub fn as_term_ref(&self) -> RdfTermRef<V> {
 		match self {
 			Self::Borrowed(t) => *t,
@@ -124,6 +125,7 @@ impl<'a, V: Vocabulary> CowRdfTerm<'a, V> {
 			},
 		}
 	}
+	*/
 
 	pub fn into_owned(self) -> RdfTerm<V>
 	where
@@ -308,10 +310,12 @@ impl<'a, V: IriVocabulary> CowRdfLiteral<'a, V> {
 		}
 	}
 
+	/*
 	pub fn as_literal_ref(&self) -> RdfLiteralRef<V> {
 		match self {
 			Self::Borrowed(l) => *l,
 			Self::Owned(l) => l.as_literal_ref(),
 		}
 	}
+	*/
 }

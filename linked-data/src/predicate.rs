@@ -186,7 +186,7 @@ pub trait LinkedDataDeserializePredicateObjects<I: Interpretation = (), V: Vocab
 		dataset: &D,
 		graph: Option<&I::Resource>,
 		objects: impl IntoIterator<Item = &'a I::Resource>,
-		context: Context<I>,
+		context: &Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		I::Resource: 'a,
@@ -209,7 +209,7 @@ pub trait LinkedDataDeserializePredicateObjects<I: Interpretation = (), V: Vocab
 			dataset,
 			graph,
 			objects,
-			Context::default(),
+			&Context::default(),
 		)
 	}
 }
@@ -222,7 +222,7 @@ macro_rules! deserialize_single_object {
 			dataset: &D,
 			graph: Option<&I::Resource>,
 			objects: impl IntoIterator<Item = &'a I::Resource>,
-			context: $crate::Context<I>,
+			context: &$crate::Context<I>,
 		) -> Result<Self, FromLinkedDataError>
 		where
 			I::Resource: 'a,
@@ -285,7 +285,7 @@ impl<I: Interpretation, V: Vocabulary, T: LinkedDataDeserializePredicateObjects<
 		dataset: &D,
 		graph: Option<&I::Resource>,
 		objects: impl IntoIterator<Item = &'a I::Resource>,
-		context: Context<I>,
+		context: &Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		I::Resource: 'a,
@@ -307,7 +307,7 @@ where
 		dataset: &D,
 		graph: Option<&I::Resource>,
 		objects: impl IntoIterator<Item = &'a I::Resource>,
-		context: Context<I>,
+		context: &Context<I>,
 	) -> Result<Self, FromLinkedDataError>
 	where
 		I::Resource: 'a,

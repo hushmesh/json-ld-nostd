@@ -26,7 +26,7 @@ macro_rules! deserialize_datatype {
 					_dataset: &D,
 					_graph: Option<&I::Resource>,
 					resource: &I::Resource,
-					context: Context<I>
+					context: &Context<I>
 				) -> Result<Self, FromLinkedDataError>
 				where
 					D: rdf_types::dataset::PatternMatchingDataset<Resource = I::Resource>
@@ -85,7 +85,7 @@ macro_rules! deserialize_datatype {
 					dataset: &D,
 					graph: Option<&I::Resource>,
 					objects: impl IntoIterator<Item = &'a <I as Interpretation>::Resource>,
-					context: Context<I>
+					context: &Context<I>
 				) -> Result<Self, FromLinkedDataError>
 				where
 					<I as Interpretation>::Resource: 'a,
