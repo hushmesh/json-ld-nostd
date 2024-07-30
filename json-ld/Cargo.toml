@@ -68,7 +68,7 @@ iref = { path = "../iref", default-features = false }
 static-iref = { path = "../static-iref", default-features = false }
 langtag = { path = "../langtag", default-features = false }
 rdf-types = { path = "../rdf-types", default-features = false }
-contextual = "0.1.4"
+contextual = { path = "../contextual", default-features = false }
 locspan = { path = "../locspan", default-features = false }
 educe = { path = "../educe" }
 futures = "0.3"
