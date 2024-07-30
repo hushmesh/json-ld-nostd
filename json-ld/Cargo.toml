@@ -72,7 +72,7 @@ contextual = { path = "../contextual", default-features = false }
 locspan = { path = "../locspan", default-features = false }
 educe = { path = "../educe" }
 futures = { version = "0.3", default-features = false }
-mown = "0.2.2"
+mown = { path = "../mown", default-features = false }
 hashbrown = "0.12.1"
 smallvec = "1.10"
 log = "0.4.17"
