@@ -1,0 +1,25 @@
+[package]
+name = "cc-traits"
+version = "2.0.0"
+authors = ["Timothée Haudebourg <timothee@haudebourg.net>"]
+edition = "2018"
+categories = ["data-structures", "no-std", "rust-patterns"]
+keywords = ["trait", "data-structure", "collection", "common"]
+description = "Common collection traits"
+repository = "https://github.com/timothee-haudebourg/cc-traits"
+documentation = "https://docs.rs/cc-traits"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+
+[features]
+default = ["alloc", "std"]
+alloc = []
+std = []
+nightly = []
+all-impls = ["slab", "smallvec", "serde_json", "ijson"]
+
+[dependencies]
+slab = { version = "^0.4", optional = true, default-features = false }
+smallvec = { version = "^1.6", optional = true, default-features = false }
+serde_json = { version = "^1.0.71", optional = true, default-features = false }
+ijson = { version = "^0.1", optional = true, default-features = false }
