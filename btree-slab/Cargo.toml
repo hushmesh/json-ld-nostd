@@ -1,0 +1,26 @@
+[package]
+name = "btree-slab"
+version = "0.6.1"
+authors = ["Timothée Haudebourg <author@haudebourg.net>"]
+edition = "2021"
+categories = ["data-structures"]
+keywords = ["btree", "map", "set", "slab"]
+description = "A memory compact Slab-based B-tree implementation"
+repository = "https://github.com/timothee-haudebourg/btree-slab"
+documentation = "https://docs.rs/btree-slab"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+
+[features]
+default = ["std-slab", "std"]
+std = []
+dot = []
+std-slab = ["slab", "cc-traits/slab"]
+
+[dependencies]
+smallvec = "1.8.0"
+cc-traits = "2.0"
+slab = { version = "0.4.5", optional = true, default-features = false }
+
+[dev-dependencies]
+rand = { version = "0.8.5", features = ["small_rng"] }
