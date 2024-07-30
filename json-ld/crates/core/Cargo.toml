@@ -38,7 +38,7 @@ serde = { workspace = true, optional = true }
 once_cell = { version = "1.17.0", default-features = false, features = ["alloc"] }
 ryu-js = "0.2.2"
 permutohedron = { version = "0.2" }
-pretty_dtoa = "0.3"
+pretty_dtoa = { path = "../../../pretty_dtoa" }
 mime = "0.3"
 
 # For the reqwest loader
