@@ -1,4 +1,4 @@
-use replace_with::replace_with_or_abort_and_return;
+use replace_with::replace_with_or_default_and_return;
 
 use crate::{
 	pattern::{quad, CanonicalQuadPattern, ResourceOrVar, TriplePattern},
@@ -10,6 +10,12 @@ use crate::{
 pub enum CanonicalTriplePattern<T> {
 	AnySubject(AnySubject<T>),
 	GivenSubject(T, GivenSubject<T>),
+}
+
+impl<T> Default for CanonicalTriplePattern<T> {
+	fn default() -> Self {
+		Self::AnySubject(AnySubject::default())
+	}
 }
 
 impl<T> From<Triple<T>> for CanonicalTriplePattern<T> {
@@ -112,7 +118,7 @@ impl<T> CanonicalTriplePattern<T> {
 	where
 		T: Clone,
 	{
-		replace_with_or_abort_and_return(self, |this| match this {
+		replace_with_or_default_and_return(self, |this| match this {
 			Self::AnySubject(AnySubject::AnyPredicate(AnySubjectAnyPredicate::AnyObject)) => (
 				PatternSubject::Any,
 				Self::GivenSubject(
@@ -266,7 +272,7 @@ impl<T> CanonicalTriplePattern<T> {
 	where
 		T: Clone,
 	{
-		replace_with_or_abort_and_return(self, |this| match this {
+		replace_with_or_default_and_return(self, |this| match this {
 			Self::AnySubject(AnySubject::SameAsSubject(AnySubjectGivenPredicate::AnyObject)) => (
 				PatternPredicate::SameAsSubject,
 				Self::GivenSubject(
@@ -318,7 +324,7 @@ impl<T> CanonicalTriplePattern<T> {
 	where
 		T: Clone,
 	{
-		replace_with_or_abort_and_return(self, |this| match this {
+		replace_with_or_default_and_return(self, |this| match this {
 			Self::AnySubject(AnySubject::AnyPredicate(AnySubjectAnyPredicate::SameAsSubject)) => (
 				PatternObject::SameAsSubject,
 				Self::GivenSubject(
@@ -438,6 +444,12 @@ pub enum PatternObject<T> {
 	Given(T),
 }
 
+impl<T> Default for PatternObject<T> {
+	fn default() -> Self {
+		Self::Any
+	}
+}
+
 impl<T> PatternObject<T> {
 	pub fn id(&self) -> Option<&T> {
 		match self {
@@ -484,6 +496,12 @@ pub enum AnySubject<T> {
 	AnyPredicate(AnySubjectAnyPredicate<T>),
 	SameAsSubject(AnySubjectGivenPredicate<T>),
 	GivenPredicate(T, AnySubjectGivenPredicate<T>),
+}
+
+impl<T> Default for AnySubject<T> {
+	fn default() -> Self {
+		Self::AnyPredicate(AnySubjectAnyPredicate::AnyObject)
+	}
 }
 
 impl<T> AnySubject<T> {
@@ -561,7 +579,7 @@ impl<T> AnySubject<T> {
 	where
 		T: Clone,
 	{
-		replace_with_or_abort_and_return(self, |this| match this {
+		replace_with_or_default_and_return(self, |this| match this {
 			Self::AnyPredicate(AnySubjectAnyPredicate::AnyObject) => (
 				PatternPredicate::Any,
 				Self::GivenPredicate(p, AnySubjectGivenPredicate::AnyObject),
@@ -601,7 +619,7 @@ impl<T> AnySubject<T> {
 	where
 		T: Clone,
 	{
-		replace_with_or_abort_and_return(self, |this| match this {
+		replace_with_or_default_and_return(self, |this| match this {
 			Self::AnyPredicate(AnySubjectAnyPredicate::SameAsPredicate) => (
 				PatternObject::Any,
 				Self::GivenPredicate(o.clone(), AnySubjectGivenPredicate::GivenObject(o)),
@@ -632,6 +650,12 @@ pub enum AnySubjectAnyPredicate<T> {
 	SameAsSubject,
 	SameAsPredicate,
 	GivenObject(T),
+}
+
+impl<T> Default for AnySubjectAnyPredicate<T> {
+	fn default() -> Self {
+		Self::AnyObject
+	}
 }
 
 impl<T> AnySubjectAnyPredicate<T> {
@@ -768,6 +792,12 @@ pub enum GivenSubject<T> {
 	GivenPredicate(T, GivenSubjectGivenPredicate<T>),
 }
 
+impl<T> Default for GivenSubject<T> {
+	fn default() -> Self {
+		Self::AnyPredicate(GivenSubjectAnyPredicate::AnyObject)
+	}
+}
+
 impl<T> GivenSubject<T> {
 	pub fn from_option_triple(p: Option<T>, o: Option<T>) -> Self {
 		match p {
@@ -830,7 +860,7 @@ impl<T> GivenSubject<T> {
 	where
 		T: Clone,
 	{
-		replace_with_or_abort_and_return(self, |this| match this {
+		replace_with_or_default_and_return(self, |this| match this {
 			Self::AnyPredicate(GivenSubjectAnyPredicate::SameAsPredicate) => (
 				PatternPredicate::Any,
 				Self::GivenPredicate(p.clone(), GivenSubjectGivenPredicate::GivenObject(p)),
@@ -854,7 +884,7 @@ impl<T> GivenSubject<T> {
 	where
 		T: Clone,
 	{
-		replace_with_or_abort_and_return(self, |this| match this {
+		replace_with_or_default_and_return(self, |this| match this {
 			Self::AnyPredicate(GivenSubjectAnyPredicate::SameAsPredicate) => (
 				PatternObject::Any,
 				Self::GivenPredicate(o.clone(), GivenSubjectGivenPredicate::GivenObject(o)),
