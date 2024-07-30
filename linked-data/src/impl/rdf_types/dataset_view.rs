@@ -23,8 +23,8 @@ where
 	where
 		S: GraphVisitor<I, V>,
 	{
-		let mut visited_subjects = im::HashSet::new();
-		let mut visited_graphs = im::HashSet::new();
+		let mut visited_subjects = hashbrown::HashSet::new();
+		let mut visited_graphs = hashbrown::HashSet::new();
 		if let Some(g) = self.graph {
 			visited_graphs.insert(g);
 		}
@@ -64,8 +64,8 @@ struct PredicateObjects<'d, 'v, D: Dataset> {
 	graph: Option<&'d D::Resource>,
 	subject: &'d D::Resource,
 	predicate: &'d D::Resource,
-	visited_subjects: &'v im::HashSet<&'d D::Resource>,
-	visited_graphs: &'v im::HashSet<&'d D::Resource>,
+	visited_subjects: &'v hashbrown::HashSet<&'d D::Resource>,
+	visited_graphs: &'v hashbrown::HashSet<&'d D::Resource>,
 }
 
 impl<'d, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataPredicateObjects<I, V>
@@ -115,8 +115,8 @@ struct Object<'a, 'v, D: Dataset> {
 	dataset: &'a D,
 	graph: Option<&'a D::Resource>,
 	object: &'a D::Resource,
-	visited_subjects: &'v im::HashSet<&'a D::Resource>,
-	visited_graphs: &'v im::HashSet<&'a D::Resource>,
+	visited_subjects: &'v hashbrown::HashSet<&'a D::Resource>,
+	visited_graphs: &'v hashbrown::HashSet<&'a D::Resource>,
 }
 
 impl<'a, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for Object<'a, 'v, D>
@@ -133,7 +133,7 @@ where
 		let subject = self.object;
 
 		let mut visited_subjects = self.visited_subjects.clone();
-		let visit_predicates = visited_subjects.insert(subject).is_none();
+		let visit_predicates = visited_subjects.insert(subject);
 
 		Subject::new(
 			self.dataset,
@@ -153,8 +153,8 @@ struct Subject<'a, 'v, D: Dataset> {
 	dataset: &'a D,
 	graph: Option<&'a D::Resource>,
 	subject: &'a D::Resource,
-	visited_subjects: &'v im::HashSet<&'a D::Resource>,
-	visited_graphs: &'v im::HashSet<&'a D::Resource>,
+	visited_subjects: &'v hashbrown::HashSet<&'a D::Resource>,
+	visited_graphs: &'v hashbrown::HashSet<&'a D::Resource>,
 	visit_predicates: bool,
 }
 
@@ -170,8 +170,8 @@ where
 		dataset: &'a D,
 		graph: Option<&'a D::Resource>,
 		subject: &'a D::Resource,
-		visited_subjects: &'v im::HashSet<&'a D::Resource>,
-		visited_graphs: &'v im::HashSet<&'a D::Resource>,
+		visited_subjects: &'v hashbrown::HashSet<&'a D::Resource>,
+		visited_graphs: &'v hashbrown::HashSet<&'a D::Resource>,
 		visit_predicates: bool,
 	) -> Self {
 		Self {
@@ -212,7 +212,7 @@ where
 
 			if self.dataset.contains_named_graph(self.subject) {
 				let mut visited_graphs = self.visited_graphs.clone();
-				if visited_graphs.insert(self.subject).is_none() {
+				if visited_graphs.insert(self.subject) {
 					visitor.graph(&NamedGraphView {
 						dataset: self.dataset,
 						graph: self.subject,
@@ -275,7 +275,7 @@ where
 struct NamedGraphView<'a, 'v, D: Dataset> {
 	dataset: &'a D,
 	graph: &'a D::Resource,
-	visited_graphs: &'v im::HashSet<&'a D::Resource>,
+	visited_graphs: &'v hashbrown::HashSet<&'a D::Resource>,
 }
 
 impl<'a, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataResource<I, V>
@@ -305,7 +305,7 @@ where
 	where
 		S: GraphVisitor<I, V>,
 	{
-		let mut visited_subjects = im::HashSet::new();
+		let mut visited_subjects = hashbrown::HashSet::new();
 		let mut graph_subjects = Vec::new();
 
 		for subject in self.dataset.subjects() {

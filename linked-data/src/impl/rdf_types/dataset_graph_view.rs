@@ -1,8 +1,8 @@
+use core::hash::Hash;
 use rdf_types::{
 	dataset::{DatasetGraphView, PatternMatchingDataset, PredicateTraversableDataset},
 	Dataset, Interpretation, Vocabulary,
 };
-use core::hash::Hash;
 
 use crate::{
 	LinkedDataPredicateObjects, LinkedDataResource, LinkedDataSubject, PredicateObjectsVisitor,
@@ -18,7 +18,7 @@ where
 	where
 		S: SubjectVisitor<I, V>,
 	{
-		let mut visited = im::HashSet::new();
+		let mut visited = hashbrown::HashSet::new();
 		visited.insert(self.resource);
 
 		Subject::new(self.dataset, self.graph, self.resource, &visited, true)
@@ -32,7 +32,7 @@ struct PredicateObjects<'d, 'v, D: Dataset> {
 	graph: Option<&'d D::Resource>,
 	subject: &'d D::Resource,
 	predicate: &'d D::Resource,
-	visited: &'v im::HashSet<&'d D::Resource>,
+	visited: &'v hashbrown::HashSet<&'d D::Resource>,
 }
 
 impl<'d, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataPredicateObjects<I, V>
@@ -79,7 +79,7 @@ struct Object<'d, 'v, D: Dataset> {
 	dataset: &'d D,
 	graph: Option<&'d D::Resource>,
 	object: &'d D::Resource,
-	visited: &'v im::HashSet<&'d D::Resource>,
+	visited: &'v hashbrown::HashSet<&'d D::Resource>,
 }
 
 impl<'d, 'v, I: Interpretation, V: Vocabulary, D> LinkedDataSubject<I, V> for Object<'d, 'v, D>
@@ -93,7 +93,7 @@ where
 	{
 		let subject = self.object;
 		let mut visited = self.visited.clone();
-		let visit_predicates = visited.insert(subject).is_none();
+		let visit_predicates = visited.insert(subject);
 
 		Subject::new(
 			self.dataset,
@@ -112,7 +112,7 @@ struct Subject<'d, 'v, D: Dataset> {
 	dataset: &'d D,
 	graph: Option<&'d D::Resource>,
 	subject: &'d D::Resource,
-	visited: &'v im::HashSet<&'d D::Resource>,
+	visited: &'v hashbrown::HashSet<&'d D::Resource>,
 	visit_predicates: bool,
 }
 
@@ -121,7 +121,7 @@ impl<'d, 'v, D: PredicateTraversableDataset + PatternMatchingDataset> Subject<'d
 		dataset: &'d D,
 		graph: Option<&'d D::Resource>,
 		subject: &'d D::Resource,
-		visited: &'v im::HashSet<&'d D::Resource>,
+		visited: &'v hashbrown::HashSet<&'d D::Resource>,
 		visit_predicates: bool,
 	) -> Self {
 		Self {
