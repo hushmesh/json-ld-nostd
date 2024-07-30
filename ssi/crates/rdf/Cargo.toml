@@ -20,7 +20,7 @@ linked-data.workspace = true
 serde.workspace = true
 indexmap.workspace = true
 ahash = { version = "=0.7.7", default-features = false }
-combination = "0.1"
+combination = { path = "../../../combination", default-features = false }
 
 [dev-dependencies]
 locspan.workspace = true
