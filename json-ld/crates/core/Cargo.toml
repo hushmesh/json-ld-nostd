@@ -39,7 +39,7 @@ once_cell = { version = "1.17.0", default-features = false, features = ["alloc"]
 ryu-js = "0.2.2"
 permutohedron = { version = "0.2" }
 pretty_dtoa = { path = "../../../pretty_dtoa" }
-mime = "0.3"
+mime = { path = "../../../mime", default-features = false }
 
 # For the reqwest loader
 reqwest = { version = "0.12", optional = true }
