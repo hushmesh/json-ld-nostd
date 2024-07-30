@@ -5,8 +5,8 @@ use crate::{
 	},
 	utils::binary_search_min,
 };
-use alloc::borrow::Borrow;
 use smallvec::SmallVec;
+use std::borrow::Borrow;
 
 #[derive(Clone)]
 pub struct Leaf<K, V> {
@@ -21,14 +21,14 @@ impl<K, V> Leaf<K, V> {
 		items.push(item);
 
 		Leaf {
-			parent: parent.unwrap_or(core::usize::MAX),
+			parent: parent.unwrap_or(std::usize::MAX),
 			items,
 		}
 	}
 
 	#[inline]
 	pub fn parent(&self) -> Option<usize> {
-		if self.parent == core::usize::MAX {
+		if self.parent == std::usize::MAX {
 			None
 		} else {
 			Some(self.parent)
@@ -37,7 +37,7 @@ impl<K, V> Leaf<K, V> {
 
 	#[inline]
 	pub fn set_parent(&mut self, p: Option<usize>) {
-		self.parent = p.unwrap_or(core::usize::MAX);
+		self.parent = p.unwrap_or(std::usize::MAX);
 	}
 
 	#[inline]
@@ -51,7 +51,7 @@ impl<K, V> Leaf<K, V> {
 	}
 
 	#[inline]
-	pub fn iter(&self) -> core::slice::Iter<Item<K, V>> {
+	pub fn iter(&self) -> std::slice::Iter<Item<K, V>> {
 		self.items.as_ref().iter()
 	}
 
@@ -136,7 +136,7 @@ impl<K, V> Leaf<K, V> {
 		match binary_search_min(&self.items, &key) {
 			Some(i) => {
 				if self.items[i].key() == &key {
-					core::mem::swap(&mut value, self.items[i].value_mut());
+					std::mem::swap(&mut value, self.items[i].value_mut());
 					(i.into(), Some(value))
 				} else {
 					self.items.insert(i + 1, Item::new(key, value));

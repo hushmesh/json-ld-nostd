@@ -1,5 +1,5 @@
 use crate::generic::node::Keyed;
-use alloc::borrow::Borrow;
+use std::borrow::Borrow;
 
 /// Search in `sorted_slice` for the item with the nearest key smaller or equal to the given one.
 ///

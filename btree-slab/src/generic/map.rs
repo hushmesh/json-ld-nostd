@@ -1,7 +1,7 @@
 use crate::generic::node::{Address, Balance, Item, Node, WouldUnderflow};
-use alloc::borrow::Borrow;
 use cc_traits::{SimpleCollectionMut, SimpleCollectionRef, Slab, SlabMut};
-use core::{
+use std::{
+	borrow::Borrow,
 	cmp::Ordering,
 	hash::{Hash, Hasher},
 	iter::{DoubleEndedIterator, ExactSizeIterator, FromIterator, FusedIterator},
@@ -1055,11 +1055,11 @@ where
 
 		// We can just swap `self` and `other` if `self` is empty.
 		if self.is_empty() {
-			core::mem::swap(self, other);
+			std::mem::swap(self, other);
 			return;
 		}
 
-		let other = core::mem::take(other);
+		let other = std::mem::take(other);
 		for (key, value) in other {
 			self.insert(key, value);
 		}
@@ -1139,7 +1139,7 @@ where
 
 		match self.node_mut(right_sibling_id).pop_left() {
 			Ok((mut value, opt_child_id)) => {
-				core::mem::swap(
+				std::mem::swap(
 					&mut value,
 					self.node_mut(id).item_mut(pivot_offset).unwrap(),
 				);
@@ -1201,7 +1201,7 @@ where
 			};
 			match self.node_mut(left_sibling_id).pop_right() {
 				Ok((left_offset, mut value, opt_child_id)) => {
-					core::mem::swap(
+					std::mem::swap(
 						&mut value,
 						self.node_mut(id).item_mut(pivot_offset).unwrap(),
 					);
@@ -1607,7 +1607,7 @@ where
 
 					self.addr = self.btree.next_item_address(addr);
 					let item = self.btree.item_mut(addr).unwrap();
-					Some(unsafe { core::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.
+					Some(unsafe { std::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.
 				} else {
 					None
 				}
@@ -1628,7 +1628,7 @@ where
 
 			let item = self.btree.item_mut(addr).unwrap();
 			self.end = Some(addr);
-			Some(unsafe { core::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.s
+			Some(unsafe { std::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.s
 		} else {
 			None
 		}
@@ -1861,7 +1861,7 @@ where
 
 					let item = unsafe {
 						// this is safe because the item at `self.addr` exists and is never touched again.
-						core::ptr::read(self.btree.item(addr).unwrap())
+						std::ptr::read(self.btree.item(addr).unwrap())
 					};
 
 					if self.len > 0 {
@@ -1875,7 +1875,7 @@ where
 
 								// we have gove through every item of the node, we can release it.
 								let node = self.btree.release_node(addr.id);
-								core::mem::forget(node); // do not call `drop` on the node since items have been moved.
+								std::mem::forget(node); // do not call `drop` on the node since items have been moved.
 							}
 						}
 					} else {
@@ -1887,7 +1887,7 @@ where
 
 								if addr.offset >= self.btree.node(addr.id).item_count() {
 									let node = self.btree.release_node(addr.id);
-									core::mem::forget(node); // do not call `drop` on the node since items have been moved.
+									std::mem::forget(node); // do not call `drop` on the node since items have been moved.
 								}
 							}
 						}
@@ -1897,7 +1897,7 @@ where
 							while let Some(node_id) = id {
 								let node = self.btree.release_node(node_id);
 								id = node.parent();
-								core::mem::forget(node); // do not call `drop` on the node since items have been moved.
+								std::mem::forget(node); // do not call `drop` on the node since items have been moved.
 							}
 						}
 					}
@@ -1928,7 +1928,7 @@ where
 
 						// we have gove through every item of the node, we can release it.
 						let node = self.btree.release_node(id);
-						core::mem::forget(node); // do not call `drop` on the node since items have been moved.
+						std::mem::forget(node); // do not call `drop` on the node since items have been moved.
 					}
 
 					addr
@@ -1940,7 +1940,7 @@ where
 
 			let item = unsafe {
 				// this is safe because the item at `self.end` exists and is never touched again.
-				core::ptr::read(self.btree.item(addr).unwrap())
+				std::ptr::read(self.btree.item(addr).unwrap())
 			};
 
 			self.end = Some(addr);
@@ -1953,7 +1953,7 @@ where
 
 					if addr.offset >= self.btree.node(addr.id).item_count() {
 						let node = self.btree.release_node(addr.id);
-						core::mem::forget(node); // do not call `drop` on the node since items have been moved.
+						std::mem::forget(node); // do not call `drop` on the node since items have been moved.
 					}
 				}
 
@@ -1962,7 +1962,7 @@ where
 					while let Some(node_id) = id {
 						let node = self.btree.release_node(node_id);
 						id = node.parent();
-						core::mem::forget(node); // do not call `drop` on the node since items have been moved.
+						std::mem::forget(node); // do not call `drop` on the node since items have been moved.
 					}
 				}
 			}
@@ -2488,7 +2488,7 @@ where
 			let addr = self.addr;
 			self.addr = self.btree.next_item_or_back_address(addr).unwrap();
 			let item = self.btree.item_mut(addr).unwrap();
-			Some(unsafe { core::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.
+			Some(unsafe { std::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.
 		} else {
 			None
 		}
@@ -2500,7 +2500,7 @@ where
 			let addr = self.btree.previous_item_address(self.addr).unwrap();
 			let item = self.btree.item_mut(addr).unwrap();
 			self.end = addr;
-			Some(unsafe { core::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.s
+			Some(unsafe { std::mem::transmute(item) }) // this is safe because only one mutable reference to the same item can be emitted.s
 		} else {
 			None
 		}

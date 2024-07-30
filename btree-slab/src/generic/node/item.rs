@@ -1,5 +1,5 @@
 use super::Keyed;
-use core::{cmp::Ordering, mem::MaybeUninit};
+use std::{cmp::Ordering, mem::MaybeUninit};
 
 pub struct Item<K, V> {
 	/// # Safety
@@ -64,8 +64,8 @@ impl<K, V> Item<K, V> {
 	pub fn set(&mut self, key: K, value: V) -> (K, V) {
 		let mut old_key = MaybeUninit::new(key);
 		let mut old_value = MaybeUninit::new(value);
-		core::mem::swap(&mut old_key, &mut self.key);
-		core::mem::swap(&mut old_value, &mut self.value);
+		std::mem::swap(&mut old_key, &mut self.key);
+		std::mem::swap(&mut old_value, &mut self.value);
 		unsafe { (old_key.assume_init(), old_value.assume_init()) }
 	}
 
@@ -73,14 +73,14 @@ impl<K, V> Item<K, V> {
 	#[inline]
 	pub fn set_key(&mut self, key: K) -> K {
 		let mut old_key = MaybeUninit::new(key);
-		core::mem::swap(&mut old_key, &mut self.key);
+		std::mem::swap(&mut old_key, &mut self.key);
 		unsafe { old_key.assume_init() }
 	}
 
 	#[inline]
 	pub fn set_value(&mut self, value: V) -> V {
 		let mut old_value = MaybeUninit::new(value);
-		core::mem::swap(&mut old_value, &mut self.value);
+		std::mem::swap(&mut old_value, &mut self.value);
 		unsafe { old_value.assume_init() }
 	}
 
@@ -93,7 +93,7 @@ impl<K, V> Item<K, V> {
 	pub fn into_key(self) -> K {
 		let (key, value) = self.into_inner();
 		unsafe {
-			core::mem::drop(value.assume_init());
+			std::mem::drop(value.assume_init());
 			key.assume_init()
 		}
 	}
@@ -102,7 +102,7 @@ impl<K, V> Item<K, V> {
 	pub fn into_value(self) -> V {
 		let (key, value) = self.into_inner();
 		unsafe {
-			core::mem::drop(key.assume_init());
+			std::mem::drop(key.assume_init());
 			value.assume_init()
 		}
 	}
@@ -131,16 +131,16 @@ impl<K, V> Item<K, V> {
 	#[inline]
 	pub unsafe fn forget_value(self) {
 		let (key, _) = self.into_inner();
-		core::mem::drop(key.assume_init())
+		std::mem::drop(key.assume_init())
 	}
 
 	#[inline]
 	pub fn into_inner(mut self) -> (MaybeUninit<K>, MaybeUninit<V>) {
 		let mut key = MaybeUninit::uninit();
 		let mut value = MaybeUninit::uninit();
-		core::mem::swap(&mut key, &mut self.key);
-		core::mem::swap(&mut value, &mut self.value);
-		core::mem::forget(self);
+		std::mem::swap(&mut key, &mut self.key);
+		std::mem::swap(&mut value, &mut self.value);
+		std::mem::forget(self);
 		(key, value)
 	}
 }
@@ -148,8 +148,8 @@ impl<K, V> Item<K, V> {
 impl<K, V> Drop for Item<K, V> {
 	fn drop(&mut self) {
 		unsafe {
-			core::ptr::drop_in_place(self.key.assume_init_mut());
-			core::ptr::drop_in_place(self.value.assume_init_mut());
+			std::ptr::drop_in_place(self.key.assume_init_mut());
+			std::ptr::drop_in_place(self.value.assume_init_mut());
 		}
 	}
 }

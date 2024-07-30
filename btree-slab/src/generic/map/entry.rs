@@ -3,7 +3,7 @@ use crate::generic::{
 	node::{Address, Item, Node},
 };
 use cc_traits::{SimpleCollectionMut, SimpleCollectionRef, Slab, SlabMut};
-use core::fmt;
+use std::fmt;
 
 /// A view into a single entry in a map, which may either be vacant or occupied.
 ///

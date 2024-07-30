@@ -1,5 +1,5 @@
 use super::Offset;
-use core::fmt;
+use std::fmt;
 
 /// Item/entry location in a BTreeMap.
 ///
@@ -109,7 +109,7 @@ impl Address {
 	#[inline]
 	pub fn nowhere() -> Address {
 		Address {
-			id: core::usize::MAX,
+			id: std::usize::MAX,
 			offset: 0.into(),
 		}
 	}
@@ -117,7 +117,7 @@ impl Address {
 	/// Checks if the address is nowhere.
 	#[inline]
 	pub fn is_nowhere(&self) -> bool {
-		self.id == core::usize::MAX
+		self.id == std::usize::MAX
 	}
 }
 

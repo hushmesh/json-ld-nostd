@@ -1,7 +1,7 @@
 use crate::generic::{map, node::Node, BTreeMap};
-use alloc::borrow::Borrow;
 use cc_traits::{SimpleCollectionMut, SimpleCollectionRef, Slab, SlabMut};
-use core::{
+use std::{
+	borrow::Borrow,
 	cmp::Ordering,
 	hash::{Hash, Hasher},
 	iter::{DoubleEndedIterator, ExactSizeIterator, FromIterator, FusedIterator, Peekable},
@@ -962,7 +962,7 @@ where
 		let len1 = self.it1.len();
 		let len2 = self.it2.len();
 
-		(core::cmp::min(len1, len2), Some(core::cmp::max(len1, len2)))
+		(std::cmp::min(len1, len2), Some(std::cmp::max(len1, len2)))
 	}
 
 	#[inline]
@@ -1010,7 +1010,7 @@ where
 		let len1 = self.it1.len();
 		let len2 = self.it2.len();
 
-		(0, Some(core::cmp::min(len1, len2)))
+		(0, Some(std::cmp::min(len1, len2)))
 	}
 
 	#[inline]

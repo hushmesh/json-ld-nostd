@@ -1,5 +1,4 @@
-use alloc::borrow::Borrow;
-use core::{cmp::Ordering, fmt};
+use std::{borrow::Borrow, cmp::Ordering, fmt};
 
 mod addr;
 pub mod internal;
@@ -546,7 +545,7 @@ impl<K, V> Node<K, V> {
 
 pub enum Children<'a, K, V> {
 	Leaf,
-	Internal(Option<usize>, core::slice::Iter<'a, internal::Branch<K, V>>),
+	Internal(Option<usize>, std::slice::Iter<'a, internal::Branch<K, V>>),
 }
 
 impl<'a, K, V> Iterator for Children<'a, K, V> {
@@ -569,7 +568,7 @@ pub enum ChildrenWithSeparators<'a, K, V> {
 	Internal(
 		Option<usize>,
 		Option<&'a Item<K, V>>,
-		core::iter::Peekable<core::slice::Iter<'a, internal::Branch<K, V>>>,
+		std::iter::Peekable<std::slice::Iter<'a, internal::Branch<K, V>>>,
 	),
 }
 

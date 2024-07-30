@@ -5,9 +5,8 @@ use crate::{
 	},
 	utils::binary_search_min,
 };
-use alloc::borrow::Borrow;
-use core::cmp::Ordering;
 use smallvec::SmallVec;
+use std::{borrow::Borrow, cmp::Ordering};
 
 /// Underflow threshold.
 ///
@@ -94,7 +93,7 @@ impl<K, V> Internal<K, V> {
 		});
 
 		Internal {
-			parent: parent.unwrap_or(core::usize::MAX),
+			parent: parent.unwrap_or(std::usize::MAX),
 			first_child: left_id,
 			other_children,
 		}
@@ -124,7 +123,7 @@ impl<K, V> Internal<K, V> {
 
 	#[inline]
 	pub fn parent(&self) -> Option<usize> {
-		if self.parent == core::usize::MAX {
+		if self.parent == std::usize::MAX {
 			None
 		} else {
 			Some(self.parent)
@@ -133,7 +132,7 @@ impl<K, V> Internal<K, V> {
 
 	#[inline]
 	pub fn set_parent(&mut self, p: Option<usize>) {
-		self.parent = p.unwrap_or(core::usize::MAX);
+		self.parent = p.unwrap_or(std::usize::MAX);
 	}
 
 	#[inline]
@@ -312,7 +311,7 @@ impl<K, V> Internal<K, V> {
 		match binary_search_min(&self.other_children, &key) {
 			Some(i) => {
 				if self.other_children[i].item.key() == &key {
-					core::mem::swap(&mut value, self.other_children[i].item.value_mut());
+					std::mem::swap(&mut value, self.other_children[i].item.value_mut());
 					Ok((i.into(), value))
 				} else {
 					Err(InsertionError {
@@ -364,7 +363,7 @@ impl<K, V> Internal<K, V> {
 	/// Replace the item at the given offset.
 	#[inline]
 	pub fn replace(&mut self, offset: Offset, mut item: Item<K, V>) -> Item<K, V> {
-		core::mem::swap(&mut item, &mut self.other_children[offset.unwrap()].item);
+		std::mem::swap(&mut item, &mut self.other_children[offset.unwrap()].item);
 		item
 	}
 

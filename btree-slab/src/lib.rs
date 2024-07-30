@@ -84,10 +84,6 @@
 //! This can be used to further extend the functionalities of the `BTreeMap`
 //! collection, for example in the
 //! [`btree-range-map`](https://crates.io/crates/btree-range-map) crate.
-#![cfg_attr(not(feature = "std"), no_std)]
-
-extern crate alloc;
-
 use slab::Slab;
 
 pub mod generic;

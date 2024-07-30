@@ -2,10 +2,9 @@ use crate::generic::{
 	map::{BTreeMap, M},
 	node::{Address, Balance, Item, Node, Offset},
 };
-use alloc::borrow::Borrow;
 use cc_traits::{SimpleCollectionMut, SimpleCollectionRef, Slab, SlabMut};
-use core::mem::MaybeUninit;
 use smallvec::SmallVec;
+use std::{borrow::Borrow, mem::MaybeUninit};
 
 /// Extended API.
 ///
@@ -524,10 +523,10 @@ where
 
 		let item_count = self.node(addr.id).item_count();
 		match addr.offset.partial_cmp(&item_count) {
-			Some(core::cmp::Ordering::Less) => {
+			Some(std::cmp::Ordering::Less) => {
 				addr.offset.incr();
 			}
-			Some(core::cmp::Ordering::Greater) => {
+			Some(std::cmp::Ordering::Greater) => {
 				return None;
 			}
 			_ => (),
@@ -616,10 +615,10 @@ where
 
 		let item_count = self.node(addr.id).item_count();
 		match addr.offset.partial_cmp(&item_count) {
-			Some(core::cmp::Ordering::Less) => {
+			Some(std::cmp::Ordering::Less) => {
 				addr.offset.incr();
 			}
-			Some(core::cmp::Ordering::Greater) => {
+			Some(std::cmp::Ordering::Greater) => {
 				return None;
 			}
 			_ => (),
@@ -853,12 +852,12 @@ where
 				Ok(offset) => unsafe {
 					let mut value = MaybeUninit::uninit();
 					let item = self.node_mut(id).item_mut(offset).unwrap();
-					core::mem::swap(&mut value, item.maybe_uninit_value_mut());
+					std::mem::swap(&mut value, item.maybe_uninit_value_mut());
 					let (opt_new_value, result) = action(Some(value.assume_init()));
 					match opt_new_value {
 						Some(new_value) => {
 							let mut new_value = MaybeUninit::new(new_value);
-							core::mem::swap(&mut new_value, item.maybe_uninit_value_mut());
+							std::mem::swap(&mut new_value, item.maybe_uninit_value_mut());
 						}
 						None => {
 							let (item, _) = self.remove_at(Address::new(id, offset)).unwrap();
@@ -894,12 +893,12 @@ where
 		unsafe {
 			let mut value = MaybeUninit::uninit();
 			let item = self.node_mut(addr.id).item_mut(addr.offset).unwrap();
-			core::mem::swap(&mut value, item.maybe_uninit_value_mut());
+			std::mem::swap(&mut value, item.maybe_uninit_value_mut());
 			let (opt_new_value, result) = action(value.assume_init());
 			match opt_new_value {
 				Some(new_value) => {
 					let mut new_value = MaybeUninit::new(new_value);
-					core::mem::swap(&mut new_value, item.maybe_uninit_value_mut());
+					std::mem::swap(&mut new_value, item.maybe_uninit_value_mut());
 				}
 				None => {
 					let (item, _) = self.remove_at(addr).unwrap();
@@ -934,13 +933,13 @@ where
 							// new address.
 							if addr.id == id {
 								match addr.offset.partial_cmp(&median_offset) {
-									Some(core::cmp::Ordering::Equal) => {
+									Some(std::cmp::Ordering::Equal) => {
 										addr = Address {
 											id: parent_id,
 											offset,
 										}
 									}
-									Some(core::cmp::Ordering::Greater) => {
+									Some(std::cmp::Ordering::Greater) => {
 										addr = Address {
 											id: right_id,
 											offset: (addr.offset.unwrap() - median_offset - 1)
@@ -968,13 +967,13 @@ where
 							// new address.
 							if addr.id == id {
 								match addr.offset.partial_cmp(&median_offset) {
-									Some(core::cmp::Ordering::Equal) => {
+									Some(std::cmp::Ordering::Equal) => {
 										addr = Address {
 											id: root_id,
 											offset: 0.into(),
 										}
 									}
-									Some(core::cmp::Ordering::Greater) => {
+									Some(std::cmp::Ordering::Greater) => {
 										addr = Address {
 											id: right_id,
 											offset: (addr.offset.unwrap() - median_offset - 1)
