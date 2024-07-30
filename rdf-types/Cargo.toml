@@ -34,7 +34,7 @@ uuid = { version = "0.8", optional = true }
 indexmap = { version = "2.2", default-features = false }
 ahash = { version = "=0.7.7", default-features = false }
 educe = "0.5.11"
-slab = "0.4.8"
+slab = { version = "0.4.8", default-features = false }
 replace_with = "0.1.7"
 raw-btree = { path = "../raw-btree", default-features = false }
 
