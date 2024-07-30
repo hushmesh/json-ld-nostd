@@ -36,7 +36,7 @@ ahash = { version = "=0.7.7", default-features = false }
 educe = "0.5.11"
 slab = "0.4.8"
 replace_with = "0.1.7"
-raw-btree = "0.2.0"
+raw-btree = { path = "../raw-btree", default-features = false }
 
 [dev-dependencies]
 rand = { version = "0.8.5", features = ["small_rng"] }

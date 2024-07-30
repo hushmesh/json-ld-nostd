@@ -1,0 +1,580 @@
+use crate::{
+	balancing::rebalance,
+	node::{Address, Offset},
+	utils::Array,
+	Node, M,
+};
+use alloc::boxed::Box;
+use core::fmt;
+use core::{cmp::Ordering, ptr::NonNull};
+
+/// BTree node storage.
+///
+/// # Safety
+///
+/// An *active* identifier is a node identifier (`Self::Node`) that has been
+/// created using `allocate_node` (or `insert_node`) but not yet released using
+/// `release_node` or a `Dropper` (created with `start_dropping`).
+///
+/// - Default method implementations must not be overridden by the implementor.
+/// - `allocate_node` must not return an *active* identifier.
+///   Once returned and until released using `release_node`, this identifier
+///   must always map to the same node through `get` and `get_mut`.
+///   We say that the identifier and node are "bound" together by the storage.
+///   The created node must live at least as long as its identifier is active
+///   and the storage is not dropped.
+/// - `release_node` may only drop the node bound to the given identifier.
+/// - `start_dropping` creates a dropper for this storage.
+/// - `get` must return the node bound to the given identifier.
+/// - `get_mut` must return the node bound to the given identifier.
+pub unsafe trait Storage<T>: Default {
+	/// Node.
+	type Node: Copy + PartialEq + core::fmt::Debug;
+
+	/// Nodes dropper.
+	type Dropper: Dropper<T, Self>;
+
+	/// Allocates the given node.
+	fn allocate_node(&mut self, node: Node<T, Self>) -> Self::Node;
+
+	/// # Safety
+	///
+	/// Input node must not have been deallocated.
+	unsafe fn release_node(&mut self, id: Self::Node) -> Node<T, Self>;
+
+	/// Creates a new dropper.
+	///
+	/// Returns `None` if no dropper is required to eventually drop all the
+	/// nodes.
+	fn start_dropping(&self) -> Option<Self::Dropper>;
+
+	/// # Safety
+	///
+	/// Input node must not have been deallocated.
+	unsafe fn get(&self, id: Self::Node) -> &Node<T, Self>;
+
+	/// # Safety
+	///
+	/// - Input node must not have been deallocated.
+	/// - Different `id` must map to non-aliased nodes.
+	/// - Must not be used to create more than one concurrent mutable reference
+	///   to the same node.
+	unsafe fn get_mut(&mut self, id: Self::Node) -> &mut Node<T, Self>;
+
+	/// Inserts the given node into the storage, setting the children parent.
+	///
+	/// # Safety
+	///
+	/// The input node's children must not have been deallocated.
+	unsafe fn insert_node(&mut self, node: Node<T, Self>) -> Self::Node {
+		let children: Array<Self::Node, M> = node.children().collect();
+		let id = self.allocate_node(node);
+		for child_id in children {
+			self.get_mut(child_id).set_parent(Some(id));
+		}
+
+		id
+	}
+
+	/// Normalizes the given address.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	unsafe fn normalize(&self, mut addr: Address<Self::Node>) -> Option<Address<Self::Node>> {
+		loop {
+			let node = self.get(addr.node);
+			if addr.offset >= node.item_count() {
+				match node.parent() {
+					Some(parent_id) => {
+						addr.offset = self.get(parent_id).child_index(addr.node).unwrap().into();
+						addr.node = parent_id;
+					}
+					None => break None,
+				}
+			} else {
+				break Some(addr);
+			}
+		}
+	}
+
+	/// Converts this arbitrary address into a leaf address.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	#[inline]
+	unsafe fn leaf_address(&self, mut addr: Address<Self::Node>) -> Address<Self::Node> {
+		loop {
+			let node = self.get(addr.node);
+			match node.child_id_opt(addr.offset.unwrap()) {
+				// TODO unwrap may fail here!
+				Some(child_id) => {
+					addr.node = child_id;
+					addr.offset = self.get(child_id).item_count().into()
+				}
+				None => break,
+			}
+		}
+
+		addr
+	}
+
+	/// Get the address of the item located before this address.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	#[inline]
+	unsafe fn previous_item_address(
+		&self,
+		mut addr: Address<Self::Node>,
+	) -> Option<Address<Self::Node>> {
+		loop {
+			let node = self.get(addr.node);
+
+			match node.child_id_opt(addr.offset.unwrap()) {
+				// TODO unwrap may fail here.
+				Some(child_id) => {
+					addr.offset = self.get(child_id).item_count().into();
+					addr.node = child_id;
+				}
+				None => loop {
+					if addr.offset > 0 {
+						addr.offset.decr();
+						return Some(addr);
+					}
+
+					match self.get(addr.node).parent() {
+						Some(parent_id) => {
+							addr.offset =
+								self.get(parent_id).child_index(addr.node).unwrap().into();
+							addr.node = parent_id;
+						}
+						None => return None,
+					}
+				},
+			}
+		}
+	}
+
+	/// Returns the front address directly preceding the given address.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	#[inline]
+	unsafe fn previous_front_address(
+		&self,
+		mut addr: Address<Self::Node>,
+	) -> Option<Address<Self::Node>> {
+		loop {
+			let node = self.get(addr.node);
+			match addr.offset.value() {
+				Some(offset) => {
+					let index = if offset < node.item_count() {
+						offset
+					} else {
+						node.item_count()
+					};
+
+					match node.child_id_opt(index) {
+						Some(child_id) => {
+							addr.offset = (self.get(child_id).item_count()).into();
+							addr.node = child_id;
+						}
+						None => {
+							addr.offset.decr();
+							break;
+						}
+					}
+				}
+				None => match node.parent() {
+					Some(parent_id) => {
+						addr.offset = self.get(parent_id).child_index(addr.node).unwrap().into();
+						addr.offset.decr();
+						addr.node = parent_id;
+						break;
+					}
+					None => return None,
+				},
+			}
+		}
+
+		Some(addr)
+	}
+
+	/// Get the address of the item located after this address if any.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	#[inline]
+	unsafe fn next_item_address(
+		&self,
+		mut addr: Address<Self::Node>,
+	) -> Option<Address<Self::Node>> {
+		let item_count = self.get(addr.node).item_count();
+		match addr.offset.partial_cmp(&item_count) {
+			Some(core::cmp::Ordering::Less) => {
+				addr.offset.incr();
+			}
+			Some(core::cmp::Ordering::Greater) => {
+				return None;
+			}
+			_ => (),
+		}
+
+		// let original_addr_shifted = addr;
+
+		loop {
+			let node = self.get(addr.node);
+
+			match node.child_id_opt(addr.offset.unwrap()) {
+				// unwrap may fail here.
+				Some(child_id) => {
+					addr.offset = 0.into();
+					addr.node = child_id;
+				}
+				None => {
+					loop {
+						let node = self.get(addr.node);
+
+						if addr.offset < node.item_count() {
+							return Some(addr);
+						}
+
+						match node.parent() {
+							Some(parent_id) => {
+								addr.offset =
+									self.get(parent_id).child_index(addr.node).unwrap().into();
+								addr.node = parent_id;
+							}
+							None => {
+								// return Some(original_addr_shifted)
+								return None;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//// Returns the back address directly following the given address.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	#[inline]
+	unsafe fn next_back_address(
+		&self,
+		mut addr: Address<Self::Node>,
+	) -> Option<Address<Self::Node>> {
+		loop {
+			let node = self.get(addr.node);
+			let index = match addr.offset.value() {
+				Some(offset) => offset + 1,
+				None => 0,
+			};
+
+			if index <= node.item_count() {
+				match node.child_id_opt(index) {
+					Some(child_id) => {
+						addr.offset = Offset::before();
+						addr.node = child_id;
+					}
+					None => {
+						addr.offset = index.into();
+						break;
+					}
+				}
+			} else {
+				match node.parent() {
+					Some(parent_id) => {
+						addr.offset = self.get(parent_id).child_index(addr.node).unwrap().into();
+						addr.node = parent_id;
+						break;
+					}
+					None => return None,
+				}
+			}
+		}
+
+		Some(addr)
+	}
+
+	/// Returns the item address or back address directly following the given
+	/// address.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	#[inline]
+	unsafe fn next_item_or_back_address(
+		&self,
+		mut addr: Address<Self::Node>,
+	) -> Option<Address<Self::Node>> {
+		let item_count = self.get(addr.node).item_count();
+		match addr.offset.partial_cmp(&item_count) {
+			Some(core::cmp::Ordering::Less) => {
+				addr.offset.incr();
+			}
+			Some(core::cmp::Ordering::Greater) => {
+				return None;
+			}
+			_ => (),
+		}
+
+		let original_addr_shifted = addr;
+
+		loop {
+			let node = self.get(addr.node);
+
+			match node.child_id_opt(addr.offset.unwrap()) {
+				// TODO unwrap may fail here.
+				Some(child_id) => {
+					addr.offset = 0.into();
+					addr.node = child_id;
+				}
+				None => loop {
+					let node = self.get(addr.node);
+
+					if addr.offset < node.item_count() {
+						return Some(addr);
+					}
+
+					match node.parent() {
+						Some(parent_id) => {
+							addr.offset =
+								self.get(parent_id).child_index(addr.node).unwrap().into();
+							addr.node = parent_id;
+						}
+						None => return Some(original_addr_shifted),
+					}
+				},
+			}
+		}
+	}
+
+	/// # Safety
+	///
+	/// Input node must not have been deallocated.
+	unsafe fn address_in<Q: ?Sized>(
+		&self,
+		mut id: Self::Node,
+		cmp: impl Fn(&T, &Q) -> Ordering,
+		key: &Q,
+	) -> Result<Address<Self::Node>, Address<Self::Node>> {
+		loop {
+			match self.get(id).offset_of(&cmp, key) {
+				Ok(offset) => return Ok(Address { node: id, offset }),
+				Err((offset, None)) => return Err(Address::new(id, offset.into())),
+				Err((_, Some(child_id))) => {
+					id = child_id;
+				}
+			}
+		}
+	}
+
+	/// Inserts the item at the given address.
+	///
+	/// # Safety
+	///
+	/// Input nodes must not have been deallocated.
+	unsafe fn insert_at(
+		&mut self,
+		root: Option<Self::Node>,
+		addr: Option<Address<Self::Node>>,
+		item: T,
+	) -> (Option<Self::Node>, Option<Address<Self::Node>>) {
+		self.insert_exactly_at(root, addr.map(|addr| self.leaf_address(addr)), item, None)
+	}
+
+	/// Inserts the given item exactly at the provided **leaf** address.
+	///
+	/// # Safety
+	///
+	/// Input nodes must not have been deallocated.
+	unsafe fn insert_exactly_at(
+		&mut self,
+		root: Option<Self::Node>,
+		addr: Option<Address<Self::Node>>,
+		item: T,
+		opt_right_id: Option<Self::Node>,
+	) -> (Option<Self::Node>, Option<Address<Self::Node>>) {
+		match addr {
+			Some(addr) => {
+				self.get_mut(addr.node)
+					.insert(addr.offset, item, opt_right_id);
+				rebalance(self, root, addr.node, addr)
+			}
+			None => {
+				let new_root = Node::leaf(None, item);
+				let id = self.insert_node(new_root);
+				let addr = Address {
+					node: id,
+					offset: 0.into(),
+				};
+				(Some(id), Some(addr))
+			}
+		}
+	}
+
+	/// Replaces the item located at the given address.
+	///
+	/// # Safety
+	///
+	/// Input address's node must not have been deallocated.
+	unsafe fn replace_at(&mut self, addr: Address<Self::Node>, item: T) -> T {
+		core::mem::replace(self.get_mut(addr.node).item_mut(addr.offset).unwrap(), item)
+	}
+
+	/// # Safety
+	///
+	/// Input nodes must not have been deallocated.
+	#[inline]
+	unsafe fn remove_at(
+		&mut self,
+		root: Option<Self::Node>,
+		addr: Address<Self::Node>,
+	) -> Option<RemovedItem<T, Self>> {
+		match self.get_mut(addr.node).leaf_remove(addr.offset) {
+			Some(Ok(item)) => {
+				// removed from a leaf.
+				let (new_root, new_addr) = rebalance(self, root, addr.node, addr);
+				Some(RemovedItem {
+					new_root,
+					item,
+					new_addr,
+				})
+			}
+			Some(Err(left_child_id)) => {
+				// removed from an internal node.
+				let new_addr = self.next_item_or_back_address(addr).unwrap();
+				let (separator, leaf_id) = self.remove_rightmost_leaf_of(left_child_id);
+				let item = self.get_mut(addr.node).replace(addr.offset, separator);
+				let (new_root, new_addr) = rebalance(self, root, leaf_id, new_addr);
+				Some(RemovedItem {
+					new_root,
+					item,
+					new_addr,
+				})
+			}
+			None => None,
+		}
+	}
+
+	/// Remove the rightmost leaf node under the given node.
+	///
+	/// # Safety
+	///
+	/// Input node must not have been deallocated.
+	#[inline]
+	unsafe fn remove_rightmost_leaf_of(&mut self, mut id: Self::Node) -> (T, Self::Node) {
+		loop {
+			match self.get_mut(id).remove_rightmost_leaf() {
+				Ok(result) => return (result, id),
+				Err(child_id) => {
+					id = child_id;
+				}
+			}
+		}
+	}
+}
+
+pub struct RemovedItem<T, S: Storage<T>> {
+	pub new_root: Option<S::Node>,
+	pub item: T,
+	pub new_addr: Option<Address<S::Node>>,
+}
+
+/// Storage dropper.
+///
+/// Used to drop all the nodes of a node storage.
+///
+/// # Safety
+///
+/// `drop_node` may only drop the node bound to the given identifier.
+pub unsafe trait Dropper<T, S: Storage<T>>: Sized {
+	/// Drops the given node.
+	///
+	/// # Safety
+	///
+	/// - The node must not have been deallocated.
+	/// - No reference to the node or the node's content must exist.
+	/// - The node cannot be dereferenced anymore.
+	unsafe fn drop_node(&mut self, id: S::Node);
+}
+
+#[derive(Default)]
+pub struct BoxStorage;
+
+pub struct BoxPtr<T>(NonNull<Node<T, BoxStorage>>); // TODO use `core::ptr::Unique` when it is stable.
+
+unsafe impl<T: Send> Send for BoxPtr<T> {}
+unsafe impl<T: Sync> Sync for BoxPtr<T> {}
+
+unsafe impl<T> Storage<T> for BoxStorage {
+	type Node = BoxPtr<T>;
+
+	type Dropper = BoxDrop;
+
+	fn allocate_node(&mut self, node: Node<T, Self>) -> Self::Node {
+		let b = Box::new(node);
+		BoxPtr(NonNull::new(Box::into_raw(b)).unwrap())
+	}
+
+	unsafe fn release_node(&mut self, id: Self::Node) -> Node<T, Self> {
+		let b = Box::from_raw(id.0.as_ptr());
+		*b
+	}
+
+	fn start_dropping(&self) -> Option<Self::Dropper> {
+		Some(BoxDrop)
+	}
+
+	unsafe fn get(&self, id: Self::Node) -> &Node<T, Self> {
+		&*id.0.as_ptr()
+	}
+
+	unsafe fn get_mut(&mut self, id: Self::Node) -> &mut Node<T, Self> {
+		&mut *id.0.as_ptr()
+	}
+}
+
+impl<T> fmt::Debug for BoxPtr<T> {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		self.0.fmt(f)
+	}
+}
+
+impl<T> Clone for BoxPtr<T> {
+	fn clone(&self) -> Self {
+		*self
+	}
+}
+
+impl<T> Copy for BoxPtr<T> {}
+
+impl<T> PartialEq for BoxPtr<T> {
+	fn eq(&self, other: &Self) -> bool {
+		self.0 == other.0
+	}
+}
+
+impl<T> Eq for BoxPtr<T> {}
+
+impl<T> From<BoxPtr<T>> for usize {
+	fn from(value: BoxPtr<T>) -> Self {
+		value.0.as_ptr() as usize
+	}
+}
+
+pub struct BoxDrop;
+
+unsafe impl<T> Dropper<T, BoxStorage> for BoxDrop {
+	unsafe fn drop_node(&mut self, id: BoxPtr<T>) {
+		let _ = Box::from_raw(id.0.as_ptr());
+	}
+}
