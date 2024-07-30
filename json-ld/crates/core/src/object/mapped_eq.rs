@@ -1,4 +1,5 @@
 use crate::{Id, Indexed, ValidId};
+use ahash::RandomState;
 use alloc::vec::Vec;
 use core::hash::Hash;
 use indexmap::IndexSet;
@@ -144,7 +145,7 @@ impl<T: MappedEq> MappedEq for [T] {
 	}
 }
 
-impl<T: MappedEq> UnorderedMappedEq for IndexSet<T> {
+impl<T: MappedEq> UnorderedMappedEq for IndexSet<T, RandomState> {
 	type Item = T;
 
 	fn len(&self) -> usize {
@@ -152,7 +153,7 @@ impl<T: MappedEq> UnorderedMappedEq for IndexSet<T> {
 	}
 }
 
-impl<T: MappedEq> MappedEq for IndexSet<T> {
+impl<T: MappedEq> MappedEq for IndexSet<T, RandomState> {
 	type BlankId = T::BlankId;
 
 	fn mapped_eq<'a, 'b, F: Clone + Fn(&'a Self::BlankId) -> &'b Self::BlankId>(

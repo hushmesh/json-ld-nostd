@@ -1,5 +1,6 @@
 use crate::object::{FragmentRef, InvalidExpandedJson, Traverse};
 use crate::{Id, Indexed, IndexedObject, Node, Object, Relabel, TryFromJson};
+use ahash::RandomState;
 use core::hash::Hash;
 use hashbrown::HashMap;
 use hashbrown::HashSet;
@@ -12,12 +13,12 @@ use rdf_types::{BlankIdBuf, Generator, Vocabulary};
 ///
 /// It is just an alias for a set of (indexed) objects.
 #[derive(Debug, Clone)]
-pub struct ExpandedDocument<T = IriBuf, B = BlankIdBuf>(IndexSet<IndexedObject<T, B>>);
+pub struct ExpandedDocument<T = IriBuf, B = BlankIdBuf>(IndexSet<IndexedObject<T, B>, RandomState>);
 
 impl<T, B> Default for ExpandedDocument<T, B> {
 	#[inline(always)]
 	fn default() -> Self {
-		Self(IndexSet::new())
+		Self(IndexSet::default())
 	}
 }
 
@@ -38,12 +39,12 @@ impl<T, B> ExpandedDocument<T, B> {
 	}
 
 	#[inline(always)]
-	pub fn objects(&self) -> &IndexSet<IndexedObject<T, B>> {
+	pub fn objects(&self) -> &IndexSet<IndexedObject<T, B>, RandomState> {
 		&self.0
 	}
 
 	#[inline(always)]
-	pub fn into_objects(self) -> IndexSet<IndexedObject<T, B>> {
+	pub fn into_objects(self) -> IndexSet<IndexedObject<T, B>, RandomState> {
 		self.0
 	}
 
@@ -341,8 +342,8 @@ impl<T: Hash + Eq, B: Hash + Eq> Extend<IndexedObject<T, B>> for ExpandedDocumen
 	}
 }
 
-impl<T, B> From<IndexSet<IndexedObject<T, B>>> for ExpandedDocument<T, B> {
-	fn from(set: IndexSet<IndexedObject<T, B>>) -> Self {
+impl<T, B> From<IndexSet<IndexedObject<T, B>, RandomState>> for ExpandedDocument<T, B> {
+	fn from(set: IndexSet<IndexedObject<T, B>, RandomState>) -> Self {
 		Self(set)
 	}
 }

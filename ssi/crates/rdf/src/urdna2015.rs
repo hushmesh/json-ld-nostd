@@ -1,4 +1,5 @@
 //! URDNA2015 canonicalization algorithm implementation.
+use ahash::RandomState;
 use alloc::borrow::ToOwned;
 use alloc::collections::BTreeMap as Map;
 use alloc::collections::BTreeSet;
@@ -113,7 +114,7 @@ pub struct NormalizationState<'a> {
 pub struct IdentifierIssuer {
     pub identifier_prefix: String,
     pub identifier_counter: u64,
-    pub issued_identifiers: IndexMap<BlankIdBuf, BlankIdBuf>,
+    pub issued_identifiers: IndexMap<BlankIdBuf, BlankIdBuf, RandomState>,
 }
 
 impl IdentifierIssuer {
@@ -121,7 +122,7 @@ impl IdentifierIssuer {
         Self {
             identifier_prefix: prefix,
             identifier_counter: 0,
-            issued_identifiers: IndexMap::new(),
+            issued_identifiers: IndexMap::default(),
         }
     }
     pub fn find_issued_identifier(&self, existing_identifier: &BlankId) -> Option<&BlankId> {
@@ -314,7 +315,7 @@ pub struct NormalizedQuads<'a, Q> {
     normalization_state: NormalizationState<'a>,
 }
 
-pub type NormalizingSubstitution = IndexMap<BlankIdBuf, BlankIdBuf>;
+pub type NormalizingSubstitution = IndexMap<BlankIdBuf, BlankIdBuf, RandomState>;
 
 impl<'a, Q: Iterator<Item = LexicalQuadRef<'a>>> NormalizedQuads<'a, Q> {
     pub fn into_nquads_lines(self) -> Vec<String> {

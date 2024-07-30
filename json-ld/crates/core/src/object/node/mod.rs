@@ -1,5 +1,6 @@
 use super::{InvalidExpandedJson, Traverse, TryFromJson, TryFromJsonObject};
 use crate::{object, utils, Id, Indexed, IndexedObject, Object, Objects, Relabel, Term};
+use ahash::RandomState;
 use alloc::string::ToString;
 use alloc::vec::Vec;
 use contextual::{IntoRefWithContext, WithContext};
@@ -19,9 +20,9 @@ pub use multiset::Multiset;
 pub use properties::Properties;
 pub use reverse_properties::ReverseProperties;
 
-pub type Graph<T, B> = IndexSet<IndexedObject<T, B>>;
+pub type Graph<T, B> = IndexSet<IndexedObject<T, B>, RandomState>;
 
-pub type Included<T, B> = IndexSet<IndexedNode<T, B>>;
+pub type Included<T, B> = IndexSet<IndexedNode<T, B>, RandomState>;
 
 pub type IndexedNode<T = IriBuf, B = BlankIdBuf> = Indexed<Node<T, B>>;
 
@@ -803,8 +804,8 @@ impl<'a, T, B, N: Vocabulary<Iri = T, BlankId = B>> IntoRefWithContext<'a, str, 
 pub enum EntryValueRef<'a, T, B> {
 	Id(&'a Id<T, B>),
 	Type(&'a [Id<T, B>]),
-	Graph(&'a IndexSet<IndexedObject<T, B>>),
-	Included(&'a IndexSet<IndexedNode<T, B>>),
+	Graph(&'a IndexSet<IndexedObject<T, B>, RandomState>),
+	Included(&'a IndexSet<IndexedNode<T, B>, RandomState>),
 	Reverse(&'a ReverseProperties<T, B>),
 	Property(&'a [IndexedObject<T, B>]),
 }

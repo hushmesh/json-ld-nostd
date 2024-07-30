@@ -2,6 +2,7 @@ use crate::{
 	context, Container, ContainerKind, ContextEntry, Direction, Keyword, LenientLangTagBuf,
 	Nullable,
 };
+use ahash::RandomState;
 use alloc::boxed::Box;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -18,7 +19,7 @@ impl<T: IntoJsonWithContext<N>, N> IntoJsonWithContext<N> for Vec<T> {
 	}
 }
 
-impl<T: IntoJsonWithContext<N>, N> IntoJsonWithContext<N> for IndexSet<T> {
+impl<T: IntoJsonWithContext<N>, N> IntoJsonWithContext<N> for IndexSet<T, RandomState> {
 	fn into_json_with(self, context: &N) -> json_syntax::Value {
 		json_syntax::Value::Array(
 			self.into_iter()

@@ -388,7 +388,7 @@ where
 	if let Some(graph_entry) = node.graph_entry() {
 		node_map.declare_graph(id.clone());
 
-		let mut flat_graph = IndexSet::new();
+		let mut flat_graph = IndexSet::default();
 		for object in graph_entry.iter() {
 			let flat_object = extend_node_map(env, node_map, object, Some(&id))?;
 			flat_graph.insert(flat_object);

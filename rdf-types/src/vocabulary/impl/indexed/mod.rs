@@ -7,6 +7,7 @@ use crate::vocabulary::{
 	LiteralVocabularyMut,
 };
 use crate::{BlankId, BlankIdBuf, Literal, LiteralRef};
+use ahash::RandomState;
 use indexmap::IndexSet;
 use iref::{Iri, IriBuf};
 
@@ -21,18 +22,18 @@ pub use literal::*;
 /// Vocabulary that stores IRIs and blank node identifiers
 /// with a unique index.
 pub struct IndexVocabulary<I = IriIndex, B = BlankIdIndex, L = LiteralIndex> {
-	iri: IndexSet<IriBuf>,
-	blank_id: IndexSet<BlankIdBuf>,
-	literal: IndexSet<Literal<I>>,
+	iri: IndexSet<IriBuf, RandomState>,
+	blank_id: IndexSet<BlankIdBuf, RandomState>,
+	literal: IndexSet<Literal<I>, RandomState>,
 	bl: PhantomData<(B, L)>,
 }
 
 impl<I, B, L> Default for IndexVocabulary<I, B, L> {
 	fn default() -> Self {
 		Self {
-			iri: IndexSet::new(),
-			blank_id: IndexSet::new(),
-			literal: IndexSet::new(),
+			iri: IndexSet::default(),
+			blank_id: IndexSet::default(),
+			literal: IndexSet::default(),
 			bl: PhantomData,
 		}
 	}

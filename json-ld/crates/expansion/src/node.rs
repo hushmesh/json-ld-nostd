@@ -782,7 +782,7 @@ where
 										&& !item.is_graph()
 									{
 										let mut node = Node::new();
-										let mut graph = IndexSet::new();
+										let mut graph = IndexSet::default();
 										graph.insert(item);
 										node.set_graph_entry(Some(graph));
 										item = Object::node(node).into();
@@ -938,7 +938,7 @@ where
 							.into_iter()
 							.map(|ev| {
 								let mut node = Node::new();
-								let mut graph = IndexSet::new();
+								let mut graph = IndexSet::default();
 								graph.insert(ev);
 								node.set_graph_entry(Some(graph));
 								Object::node(node).into()

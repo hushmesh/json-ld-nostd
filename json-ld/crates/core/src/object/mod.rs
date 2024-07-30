@@ -1,5 +1,6 @@
 //! Nodes, lists and values.
 use crate::{Id, Indexed, LenientLangTag, Relabel};
+use ahash::RandomState;
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 use contextual::{IntoRefWithContext, WithContext};
@@ -815,14 +816,14 @@ impl<T, B, V: TryFromJson<T, B>> TryFromJson<T, B> for Vec<V> {
 	}
 }
 
-impl<T, B, V: Eq + Hash + TryFromJson<T, B>> TryFromJson<T, B> for IndexSet<V> {
+impl<T, B, V: Eq + Hash + TryFromJson<T, B>> TryFromJson<T, B> for IndexSet<V, RandomState> {
 	fn try_from_json_in(
 		vocabulary: &mut impl VocabularyMut<Iri = T, BlankId = B>,
 		value: json_syntax::Value,
 	) -> Result<Self, InvalidExpandedJson> {
 		match value {
 			json_syntax::Value::Array(items) => {
-				let mut result = IndexSet::new();
+				let mut result = IndexSet::default();
 
 				for item in items {
 					result.insert(V::try_from_json_in(vocabulary, item)?);

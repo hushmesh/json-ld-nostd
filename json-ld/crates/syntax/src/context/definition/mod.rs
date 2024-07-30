@@ -1,5 +1,6 @@
 use super::{term_definition, TermDefinition};
 use crate::{Direction, Keyword, LenientLangTagBuf, Nullable};
+use ahash::RandomState;
 use alloc::boxed::Box;
 use educe::Educe;
 use indexmap::IndexMap;
@@ -155,7 +156,7 @@ impl Definition {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(transparent))]
 #[educe(Default)]
-pub struct Bindings(IndexMap<Key, Nullable<TermDefinition>>);
+pub struct Bindings(IndexMap<Key, Nullable<TermDefinition>, RandomState>);
 
 pub struct BindingsIter<'a>(indexmap::map::Iter<'a, Key, Nullable<TermDefinition>>);
 

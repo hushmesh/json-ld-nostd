@@ -3,6 +3,7 @@ use crate::{
 	object::{InvalidExpandedJson, TryFromJson, TryFromJsonObject},
 	Id, IndexedObject,
 };
+use ahash::RandomState;
 use alloc::string::ToString;
 use alloc::vec::Vec;
 use core::hash::{Hash, Hasher};
@@ -18,7 +19,7 @@ pub type PropertyObjects<T, B> = Multiset<IndexedObject<T, B>>;
 	PartialEq(bound = "T: Eq + Hash, B: Eq + Hash"),
 	Eq(bound = "T: Eq + Hash, B: Eq + Hash")
 )]
-pub struct Properties<T, B>(IndexMap<Id<T, B>, PropertyObjects<T, B>>);
+pub struct Properties<T, B>(IndexMap<Id<T, B>, PropertyObjects<T, B>, RandomState>);
 
 impl<T, B> Default for Properties<T, B> {
 	fn default() -> Self {
@@ -29,7 +30,7 @@ impl<T, B> Default for Properties<T, B> {
 impl<T, B> Properties<T, B> {
 	/// Creates an empty map.
 	pub fn new() -> Self {
-		Self(IndexMap::new())
+		Self(IndexMap::default())
 	}
 
 	/// Returns the number of properties.

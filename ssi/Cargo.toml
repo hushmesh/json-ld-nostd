@@ -27,7 +27,7 @@ rdf-types = { path = "../rdf-types", default-features = false }
 xsd-types = { path = "../xsd-types", default-features = false }
 linked-data = { path = "../linked-data", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
-indexmap = { version = "1.9", default-features = false }
+indexmap = { version = "2.2", default-features = false }
 combination = "0.1"
 locspan = { path = "../locspan", default-features = false }
 nquads-syntax = "0.19"

@@ -3,6 +3,7 @@ use crate::{
 	object::{InvalidExpandedJson, TryFromJson, TryFromJsonObject},
 	Id, IndexedNode,
 };
+use ahash::RandomState;
 use alloc::string::ToString;
 use alloc::vec::Vec;
 use contextual::WithContext;
@@ -22,7 +23,7 @@ pub type ReversePropertyNodes<T = IriBuf, B = BlankIdBuf> = Multiset<IndexedNode
 	Eq(bound = "T: Eq + Hash, B: Eq + Hash")
 )]
 pub struct ReverseProperties<T = IriBuf, B = BlankIdBuf>(
-	IndexMap<Id<T, B>, ReversePropertyNodes<T, B>>,
+	IndexMap<Id<T, B>, ReversePropertyNodes<T, B>, RandomState>,
 );
 
 impl<T, B> Default for ReverseProperties<T, B> {
@@ -34,7 +35,7 @@ impl<T, B> Default for ReverseProperties<T, B> {
 impl<T, B> ReverseProperties<T, B> {
 	/// Creates an empty map.
 	pub fn new() -> Self {
-		Self(IndexMap::new())
+		Self(IndexMap::default())
 	}
 
 	/// Returns the number of reverse properties.
