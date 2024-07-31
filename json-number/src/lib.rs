@@ -26,6 +26,7 @@ extern crate alloc;
 
 use alloc::borrow::ToOwned;
 use alloc::string::String;
+use alloc::string::ToString;
 use alloc::vec::Vec;
 
 use core::borrow::Borrow;
@@ -75,10 +76,10 @@ impl<T: fmt::Display> fmt::Display for InvalidNumber<T> {
 	}
 }
 
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 impl<T: fmt::Display + fmt::Debug> std::error::Error for InvalidNumber<T> {}
 
-#[cfg(not(feature="std"))]
+#[cfg(not(feature = "std"))]
 impl<T: fmt::Display + fmt::Debug> no_std_io::error::Error for InvalidNumber<T> {}
 
 /// Number sign.
@@ -376,11 +377,7 @@ impl Number {
 
 	#[inline(always)]
 	pub fn as_f32_lossy(&self) -> f32 {
-		lexical::parse_with_options::<_, _, { lexical::format::JSON }>(
-			self.as_bytes(),
-			&LOSSY_PARSE_FLOAT,
-		)
-		.unwrap()
+		self.as_str().parse().unwrap()
 	}
 
 	/// Returns the number as a `f32` only if the operation does not induce
@@ -392,7 +389,7 @@ impl Number {
 	pub fn as_f32_lossless(&self) -> Option<f32> {
 		let f = self.as_f32_lossy();
 		let n: NumberBuf = f.try_into().unwrap();
-		#[cfg(feature="std")]
+		#[cfg(feature = "std")]
 		eprintln!("n = {n} = {f}");
 		if n.as_number() == self.trimmed() {
 			Some(f)
@@ -403,11 +400,7 @@ impl Number {
 
 	#[inline(always)]
 	pub fn as_f64_lossy(&self) -> f64 {
-		lexical::parse_with_options::<_, _, { lexical::format::JSON }>(
-			self.as_bytes(),
-			&LOSSY_PARSE_FLOAT,
-		)
-		.unwrap()
+		self.as_str().parse().unwrap()
 	}
 
 	/// Returns the number as a `f64` only if the operation does not induce
@@ -441,12 +434,6 @@ impl Number {
 		self.canonical_with(&mut buffer).to_owned()
 	}
 }
-
-const LOSSY_PARSE_FLOAT: lexical::ParseFloatOptions = unsafe {
-	lexical::ParseFloatOptions::builder()
-		.lossy(true)
-		.build_unchecked()
-};
 
 impl Deref for Number {
 	type Target = str;
@@ -685,7 +672,7 @@ macro_rules! impl_from_int {
 				#[inline(always)]
 				fn from(i: $ty) -> Self {
 					unsafe {
-						Self::new_unchecked(B::from_vec(lexical::to_string(i).into_bytes()))
+						Self::new_unchecked(B::from_vec(i.to_string().into_bytes()))
 					}
 				}
 			}
@@ -703,13 +690,6 @@ pub enum TryFromFloatError {
 	Infinite,
 }
 
-const WRITE_FLOAT: lexical::WriteFloatOptions = unsafe {
-	lexical::WriteFloatOptions::builder()
-		.trim_floats(true)
-		.exponent(b'e')
-		.build_unchecked()
-};
-
 macro_rules! impl_try_from_float {
 	($($ty:ty),*) => {
 		$(
@@ -720,7 +700,7 @@ macro_rules! impl_try_from_float {
 				fn try_from(f: $ty) -> Result<Self, Self::Error> {
 					if f.is_finite() {
 						Ok(unsafe {
-							Self::new_unchecked(B::from_vec(lexical::to_string_with_options::<_, {lexical::format::JSON}>(f, &WRITE_FLOAT).into_bytes()))
+							Self::new_unchecked(B::from_vec(f.to_string().into_bytes()))
 						})
 					} else if f.is_nan() {
 						Err(TryFromFloatError::Nan)
