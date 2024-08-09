@@ -22,6 +22,7 @@ std = [ "ssi-rdf/std" ]
 ssi-rdf = { path = "./crates/rdf", version = "0.1", default-features = false }
 ssi-crypto = { path = "./crates/crypto", version = "0.1", default-features = false }
 
+ahash = { version = "=0.8.6", default-features = false }
 iref = { path = "../iref", default-features = false }
 rdf-types = { path = "../rdf-types", default-features = false }
 xsd-types = { path = "../xsd-types", default-features = false }

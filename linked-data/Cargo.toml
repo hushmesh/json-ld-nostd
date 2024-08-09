@@ -27,7 +27,7 @@ xsd-types = { path = "../xsd-types", default-features = false }
 static-iref = { path = "../static-iref", default-features = false }
 json-syntax = { path = "../json-syntax", default-features = false, features = ["canonicalize"] }
 educe = { path = "../educe" }
-hashbrown = "0.12.1"
+hashbrown = "=0.14.3"
 iref.workspace = true
 thiserror-nostd-notrait.workspace = true
 linked-data-derive = { workspace = true, optional = true }
