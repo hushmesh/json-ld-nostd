@@ -31,7 +31,7 @@ futures.workspace = true
 langtag.workspace = true
 smallvec.workspace = true
 hashbrown.workspace = true
-ahash = { version = "=0.7.7", default-features = false }
+ahash.workspace = true
 thiserror-nostd-notrait.workspace = true
 indexmap.workspace = true
 serde = { workspace = true, optional = true }

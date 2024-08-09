@@ -58,6 +58,7 @@ edition = "2021"
 version = "0.21.1"
 
 [workspace.dependencies]
+ahash = { version = "=0.8.6", default-features = false, features = ["no-rng"] }
 json-ld = { path = ".", version = "0.21.1", default-features = false }
 json-ld-syntax = { path = "crates/syntax", default-features = false, version = "0.21.1" }
 json-ld-core = { path = "crates/core", default-features = false, version = "0.21.1" }
@@ -73,7 +74,7 @@ locspan = { path = "../locspan", default-features = false }
 educe = { path = "../educe" }
 futures = { version = "0.3", default-features = false }
 mown = { path = "../mown", default-features = false }
-hashbrown = "0.12.1"
+hashbrown = "=0.14.3"
 smallvec = "1.10"
 log = "0.4.17"
 thiserror-nostd-notrait = { version = "1.0", default-features = false }
