@@ -34,5 +34,6 @@ locspan = { path = "../locspan", default-features = false }
 nquads-syntax = "0.19"
 
 [dependencies]
+ssi-crypto.workspace = true
 ssi-rdf.workspace = true
 xsd-types.workspace = true

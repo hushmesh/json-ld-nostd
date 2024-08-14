@@ -240,3 +240,5 @@ pub use xsd_types;
 /// RDF utilities.
 #[doc(inline)]
 pub use ssi_rdf as rdf;
+
+pub use ssi_crypto as crypto;
