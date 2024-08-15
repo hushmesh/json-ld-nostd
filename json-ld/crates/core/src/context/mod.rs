@@ -36,7 +36,6 @@ pub struct Context<T = IriBuf, B = BlankIdBuf> {
 	default_base_direction: Option<Direction>,
 	previous_context: Option<Box<Self>>,
 	definitions: Definitions<T, B>,
-	inverse: Option<InverseContext<T, B>>,
 }
 
 impl<T, B> Default for Context<T, B> {
@@ -49,7 +48,6 @@ impl<T, B> Default for Context<T, B> {
 			default_base_direction: None,
 			previous_context: None,
 			definitions: Definitions::default(),
-			inverse: Option::None,
 		}
 	}
 }
@@ -70,7 +68,6 @@ impl<T, B> Context<T, B> {
 			default_base_direction: None,
 			previous_context: None,
 			definitions: Definitions::default(),
-			inverse: Option::None,
 		}
 	}
 
@@ -173,15 +170,13 @@ impl<T, B> Context<T, B> {
 	}
 
 	/// Returns the inverse of this context.
-	/*
-	pub fn inverse(&self) -> &InverseContext<T, B>
+	pub fn inverse(&self) -> InverseContext<T, B>
 	where
 		T: Clone + Hash + Eq,
 		B: Clone + Hash + Eq,
 	{
-		self.inverse.get_or_init(|| self.into())
+		self.clone().into()
 	}
-	*/
 
 	/// Sets the normal definition for the given term `key`.
 	pub fn set_normal(
@@ -189,7 +184,6 @@ impl<T, B> Context<T, B> {
 		key: Key,
 		definition: Option<NormalTermDefinition<T, B>>,
 	) -> Option<NormalTermDefinition<T, B>> {
-		self.inverse.take();
 		self.definitions.set_normal(key, definition)
 	}
 
@@ -200,31 +194,26 @@ impl<T, B> Context<T, B> {
 
 	/// Sets the base IRI.
 	pub fn set_base_iri(&mut self, iri: Option<T>) {
-		self.inverse.take();
 		self.base_iri = iri
 	}
 
 	/// Sets the `@vocab` value.
 	pub fn set_vocabulary(&mut self, vocab: Option<Term<T, B>>) {
-		self.inverse.take();
 		self.vocabulary = vocab;
 	}
 
 	/// Sets the default `@language` value.
 	pub fn set_default_language(&mut self, lang: Option<LenientLangTagBuf>) {
-		self.inverse.take();
 		self.default_language = lang;
 	}
 
 	/// Sets the default `@direction` value.
 	pub fn set_default_base_direction(&mut self, dir: Option<Direction>) {
-		self.inverse.take();
 		self.default_base_direction = dir;
 	}
 
 	/// Sets the previous context.
 	pub fn set_previous_context(&mut self, previous: Self) {
-		self.inverse.take();
 		self.previous_context = Some(Box::new(previous))
 	}
 
@@ -281,7 +270,6 @@ impl<T, B> Context<T, B> {
 				.previous_context
 				.map(|c| Box::new((*c).map_ids_with(map_iri, map_id))),
 			definitions: self.definitions.map_ids(map_iri, map_id),
-			inverse: Option::None,
 		}
 	}
 }
@@ -324,7 +312,6 @@ impl<T: Clone, B: Clone> Clone for Context<T, B> {
 			default_base_direction: self.default_base_direction,
 			previous_context: self.previous_context.clone(),
 			definitions: self.definitions.clone(),
-			inverse: Option::None,
 		}
 	}
 }
