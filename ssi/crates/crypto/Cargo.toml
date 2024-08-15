@@ -11,6 +11,3 @@ documentation = "https://docs.rs/ssi-crypto/"
 [features]
 default = ["std"]
 std = []
-
-[dependencies]
-sha2 = { workspace = true }

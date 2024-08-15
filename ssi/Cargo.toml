@@ -32,8 +32,8 @@ indexmap = { version = "2.2", default-features = false }
 combination = { path = "../combination", default-features = false }
 locspan = { path = "../locspan", default-features = false }
 nquads-syntax = "0.19"
-sha2 = { version = "0.10.0", default-features = false }
 
 [dependencies]
+ssi-crypto.workspace = true
 ssi-rdf.workspace = true
 xsd-types.workspace = true

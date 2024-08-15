@@ -9,6 +9,7 @@ use alloc::string::String;
 use alloc::string::ToString;
 use alloc::vec::Vec;
 use core::{borrow::Borrow, fmt};
+use ssi_crypto::hashes::sha256::Sha256;
 
 mod expand;
 pub mod urdna2015;
@@ -73,13 +74,14 @@ impl<'a, V, I: Interpretation> DatasetWithEntryPoint<'a, V, I> {
     }
 
     /// Returns the canonical form of the dataset, in the N-Quads format.
-    pub fn canonical_form(&self) -> String
+    pub fn canonical_form<S: Sha256>(&self) -> String
     where
         V: Vocabulary,
         I: ReverseTermInterpretation<Iri = V::Iri, BlankId = V::BlankId, Literal = V::Literal>,
     {
         let quads = self.into_quads();
-        urdna2015::normalize(quads.iter().map(|quad| quad.as_lexical_quad_ref())).into_nquads()
+        urdna2015::normalize::<S, _>(quads.iter().map(|quad| quad.as_lexical_quad_ref()))
+            .into_nquads()
     }
 }
 

@@ -8,6 +8,7 @@ use rdf_types::{
     vocabulary::{BlankIdVocabulary, IriVocabulary, LiteralVocabulary},
     Interpretation, InterpretationMut, Vocabulary,
 };
+use ssi_crypto::hashes::sha256::Sha256;
 
 pub trait AnyLdEnvironment {
     type Vocabulary;
@@ -40,7 +41,7 @@ pub trait AnyLdEnvironment {
         linked_data::to_lexical_quads_with(this.vocabulary, this.interpretation, input)
     }
 
-    fn canonical_quads_of<T: LinkedData<Self::Interpretation, Self::Vocabulary>>(
+    fn canonical_quads_of<S: Sha256, T: LinkedData<Self::Interpretation, Self::Vocabulary>>(
         &mut self,
         input: &T,
     ) -> Result<Vec<rdf_types::LexicalQuad>, linked_data::IntoQuadsError>
@@ -55,13 +56,15 @@ pub trait AnyLdEnvironment {
     {
         let quads = self.quads_of(input)?;
         Ok(
-            crate::urdna2015::normalize(quads.iter().map(|quad| quad.as_lexical_quad_ref()))
-                .collect(),
+            crate::urdna2015::normalize::<S, _>(
+                quads.iter().map(|quad| quad.as_lexical_quad_ref()),
+            )
+            .collect(),
         )
     }
 
     /// Returns the canonical form of the dataset, in the N-Quads format.
-    fn canonical_form_of<T: LinkedData<Self::Interpretation, Self::Vocabulary>>(
+    fn canonical_form_of<S: Sha256, T: LinkedData<Self::Interpretation, Self::Vocabulary>>(
         &mut self,
         input: &T,
     ) -> Result<Vec<String>, linked_data::IntoQuadsError>
@@ -76,8 +79,10 @@ pub trait AnyLdEnvironment {
     {
         let quads = self.quads_of(input)?;
         Ok(
-            crate::urdna2015::normalize(quads.iter().map(|quad| quad.as_lexical_quad_ref()))
-                .into_nquads_lines(),
+            crate::urdna2015::normalize::<S, _>(
+                quads.iter().map(|quad| quad.as_lexical_quad_ref()),
+            )
+            .into_nquads_lines(),
         )
     }
 }
