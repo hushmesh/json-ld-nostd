@@ -283,10 +283,8 @@ impl<T, B> Default for InverseContext<T, B> {
 	}
 }
 
-impl<'a, T: Clone + Hash + Eq, B: Clone + Hash + Eq> From<&'a Context<T, B>>
-	for InverseContext<T, B>
-{
-	fn from(context: &'a Context<T, B>) -> Self {
+impl<'a, T: Clone + Hash + Eq, B: Clone + Hash + Eq> From<Context<T, B>> for InverseContext<T, B> {
+	fn from(context: Context<T, B>) -> Self {
 		let mut result = InverseContext::new();
 
 		let mut definitions: Vec<_> = context.definitions().iter().collect();

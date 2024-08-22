@@ -36,7 +36,7 @@ thiserror-nostd-notrait.workspace = true
 indexmap.workspace = true
 serde = { workspace = true, optional = true }
 once_cell = { version = "1.17.0", default-features = false, features = ["alloc"] }
-ryu-js = "0.2.2"
+ryu-js = "1.0"
 permutohedron = { version = "0.2" }
 pretty_dtoa = { path = "../../../pretty_dtoa" }
 mime = { path = "../../../mime", default-features = false }

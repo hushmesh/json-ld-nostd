@@ -15,6 +15,7 @@ readme = "README.md"
 default = ["std"]
 std = [
 	"json-syntax/std",
+	"json-ld-compaction/std",
 	"json-ld-core/std",
 	"json-ld-context-processing/std",
 	"json-ld-expansion/std",
@@ -26,6 +27,7 @@ serde = ["json-ld-syntax/serde", "json-ld-core/serde"]
 
 [dependencies]
 json-ld-syntax.workspace = true
+json-ld-compaction.workspace = true
 json-ld-core.workspace = true
 json-ld-context-processing.workspace = true
 json-ld-expansion.workspace = true
@@ -62,6 +64,7 @@ ahash = { version = "0.8.6", default-features = false, features = ["no-rng"] }
 json-ld = { path = ".", version = "0.21.1", default-features = false }
 json-ld-syntax = { path = "crates/syntax", default-features = false, version = "0.21.1" }
 json-ld-core = { path = "crates/core", default-features = false, version = "0.21.1" }
+json-ld-compaction = { path = "crates/compaction", default-features = false, version = "0.21.1" }
 json-ld-context-processing = { path = "crates/context-processing", default-features = false, version = "0.21.1" }
 json-ld-expansion = { path = "crates/expansion", default-features = false, version = "0.21.1" }
 json-syntax = { path = "../json-syntax", default-features = false }
