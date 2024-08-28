@@ -18,7 +18,7 @@ use rdf_types::Id;
 use rdf_types::LexicalQuad;
 use rdf_types::LexicalQuadRef;
 
-use ssi_crypto::hashes::sha256::Sha256;
+use ssi_crypto::hashes::sha::Sha;
 
 use crate::{IntoNQuads, NQuadsStatement};
 
@@ -147,7 +147,7 @@ fn digest_to_lowerhex(digest: &[u8]) -> String {
 }
 
 /// <https://www.w3.org/TR/rdf-canon/#hash-1d-quads>
-pub fn hash_first_degree_quads<S: Sha256>(
+pub fn hash_first_degree_quads<S: Sha>(
     normalization_state: &mut NormalizationState,
     reference_blank_node_identifier: &BlankId,
 ) -> String {
@@ -180,12 +180,12 @@ pub fn hash_first_degree_quads<S: Sha256>(
     nquads.sort();
     // 5
     let joined_nquads = nquads.join("");
-    let nquads_digest = S::sha256(joined_nquads.as_bytes());
+    let nquads_digest = S::hash(joined_nquads.as_bytes());
     digest_to_lowerhex(&nquads_digest)
 }
 
 /// <https://www.w3.org/TR/rdf-canon/>
-pub fn normalize<'a, S: Sha256, Q: IntoIterator<Item = LexicalQuadRef<'a>>>(
+pub fn normalize<'a, S: Sha, Q: IntoIterator<Item = LexicalQuadRef<'a>>>(
     quads: Q,
 ) -> NormalizedQuads<'a, Q::IntoIter>
 where
@@ -380,7 +380,7 @@ pub fn issue_identifier(
 }
 
 /// <https://www.w3.org/TR/rdf-canon/#hash-n-degree-quads>
-pub fn hash_n_degree_quads<S: Sha256>(
+pub fn hash_n_degree_quads<S: Sha>(
     normalization_state: &mut NormalizationState,
     identifier: &BlankId,
     issuer: &mut IdentifierIssuer,
@@ -498,7 +498,7 @@ pub fn hash_n_degree_quads<S: Sha256>(
         issuer = &mut issuer_tmp;
     }
     // 6
-    let digest = S::sha256(data_to_hash.as_bytes());
+    let digest = S::hash(data_to_hash.as_bytes());
     let hash = digest_to_lowerhex(&digest);
     Ok(HashNDegreeQuadsOutput {
         hash,
@@ -507,7 +507,7 @@ pub fn hash_n_degree_quads<S: Sha256>(
 }
 
 /// <https://www.w3.org/TR/rdf-canon/#hash-related-blank-node>
-pub fn hash_related_blank_node<S: Sha256>(
+pub fn hash_related_blank_node<S: Sha>(
     normalization_state: &mut NormalizationState,
     related: &BlankId,
     quad: LexicalQuadRef,
@@ -537,7 +537,7 @@ pub fn hash_related_blank_node<S: Sha256>(
     // 4
     input += &identifier;
     // 5
-    let digest = S::sha256(input.as_bytes());
+    let digest = S::hash(input.as_bytes());
     digest_to_lowerhex(&digest)
 }
 
