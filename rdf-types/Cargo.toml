@@ -39,4 +39,4 @@ replace_with = { version = "0.1.7", default-features = false }
 raw-btree = { path = "../raw-btree", default-features = false }
 
 [dev-dependencies]
-rand = { version = "0.8.5", features = ["small_rng"] }
+rand = { version = "0.8.6", features = ["small_rng"] }
